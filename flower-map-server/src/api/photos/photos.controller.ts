@@ -3,7 +3,7 @@ import { PhotosService } from './photos.service';
 import { CreatePhotoDto } from './dto/create-photo.dto';
 import { UpdatePhotoDto } from './dto/update-photo.dto';
 
-@Controller('photos')
+@Controller('api/v1/photos')
 export class PhotosController {
   constructor(private readonly photosService: PhotosService) {}
 

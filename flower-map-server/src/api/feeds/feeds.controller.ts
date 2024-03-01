@@ -3,7 +3,7 @@ import { FeedsService } from './feeds.service';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { UpdateFeedDto } from './dto/update-feed.dto';
 
-@Controller('feeds')
+@Controller('api/v1/feeds')
 export class FeedsController {
   constructor(private readonly feedsService: FeedsService) {}
 

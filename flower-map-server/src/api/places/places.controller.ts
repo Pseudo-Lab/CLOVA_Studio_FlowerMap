@@ -3,7 +3,7 @@ import { PlacesService } from './places.service';
 import { CreatePlaceDto } from './dto/create-place.dto';
 import { UpdatePlaceDto } from './dto/update-place.dto';
 
-@Controller('places')
+@Controller('api/v1/places')
 export class PlacesController {
   constructor(private readonly placesService: PlacesService) {}
 

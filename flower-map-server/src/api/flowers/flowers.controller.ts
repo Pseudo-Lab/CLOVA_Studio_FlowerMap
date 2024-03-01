@@ -3,7 +3,7 @@ import { FlowersService } from './flowers.service';
 import { CreateFlowerDto } from './dto/create-flower.dto';
 import { UpdateFlowerDto } from './dto/update-flower.dto';
 
-@Controller('flowers')
+@Controller('api/v1/flowers')
 export class FlowersController {
   constructor(private readonly flowersService: FlowersService) {}
 
