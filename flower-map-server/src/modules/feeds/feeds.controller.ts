@@ -5,7 +5,7 @@ import { UpdateFeedDto } from './dto/update-feed.dto';
 
 @Controller('api/v1/feeds')
 export class FeedsController {
-  constructor(private readonly feedsService: FeedsService) {}
+  constructor(private readonly feedsService: FeedsService) { }
 
   @Post()
   create(@Body() createFeedDto: CreateFeedDto) {
