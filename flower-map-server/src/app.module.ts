@@ -1,13 +1,23 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { FeedsModule } from './api/feeds/feeds.module';
-import { FlowersModule } from './api/flowers/flowers.module';
-import { PhotosModule } from './api/photos/photos.module';
-import { LocationsModule } from './api/locations/locations.module';
+import { FeedsModule } from './modules/feeds/feeds.module';
+import { FlowersModule } from './modules/flowers/flowers.module';
+import { PhotosModule } from './modules/photos/photos.module';
+import { LocationsModule } from './modules/locations/locations.module';
+import { ConfigModule } from '@nestjs/config';
+import { customConfig } from './config/custom.config';
+import { CustomTypeOrmModule } from './config/custom-type-orm.module';
 
 @Module({
-  imports: [FeedsModule, FlowersModule, PhotosModule, LocationsModule],
+  imports: [
+    ConfigModule.forRoot(customConfig),
+    CustomTypeOrmModule,
+    FeedsModule,
+    FlowersModule,
+    PhotosModule,
+    LocationsModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
