@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Feed } from 'src/modules/feeds/entities/feed.entity';
 
 @Module({
     imports: [
@@ -10,7 +9,7 @@ import { Feed } from 'src/modules/feeds/entities/feed.entity';
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({
                 type: 'mysql',
-                entities: [Feed],
+                entities: [__dirname + '/../modules/**/entities/*.entity.{js,ts}'],
                 host: configService.get<string>('DB_HOST'),
                 port: configService.get<number>('DB_PORT'),
                 username: configService.get<string>('DB_USERNAME'),
