@@ -1,12 +1,12 @@
 import { Location } from "src/modules/locations/entities/location.entity";
 import { Photo } from "src/modules/photos/entities/photo.entity";
 import { Auditable } from "src/common/auditable.entity";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Feed extends Auditable {
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'feed_id' })
     feedId: number;
 
     @Column()
@@ -18,15 +18,17 @@ export class Feed extends Auditable {
     @Column()
     password: string;
 
-    @Column()
+    @Column({ type: 'datetime', width: 0, name: 'captured_at' })
     capturedAt: Date;
 
-    @Column()
+    @Column({ name: 'flowering_status' })
     floweringStatus: number;
 
-    // @OneToMany(() => Photo, (photo) => photo.feed)
-    // photos: Photo[];
+    @OneToMany(() => Photo, (photo) => photo.feed, { nullable: false })
+    photos: Photo[];
 
-    // @ManyToOne(() => Location, (location) => location.feeds)
-    // location: Location;
+    @ManyToOne(() => Location, (location) => location.feeds, { nullable: false })
+    @JoinColumn({ name: 'location_id' })
+    location: Location;
+
 }
