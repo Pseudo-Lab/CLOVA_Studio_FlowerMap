@@ -18,6 +18,9 @@ export class Image extends Auditable {
     @Column({ name: 'thumb_url' })
     thumbUrl: string;
 
+    @Column({ nullable: true })
+    index: number;
+
     @ManyToOne(() => Location, (location) => location.images, { nullable: true })
     @JoinColumn({ name: 'location_id' })
     location: Location;
