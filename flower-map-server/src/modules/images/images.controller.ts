@@ -1,36 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, UploadedFile } from '@nestjs/common';
 import { ImagesService } from './images.service';
-import { CreateImageDto } from './dto/create-image.dto';
-import { UpdateImageDto } from './dto/update-image.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { SingleResponseDto } from 'src/common/single-response.dto';
 
 @ApiTags('Image(이미지) API')
+@ApiBadRequestResponse({ description: '잘못된 요청 형식입니다. (body, query, param 등)' })
 @Controller('images')
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService) { }
 
   @Post()
-  create(@Body() createImageDto: CreateImageDto) {
-    return this.imagesService.create(createImageDto);
+  @ApiOperation({ summary: 'Image 업로드 (미완)', description: '파일 업로드 받을 예정' })
+  @ApiCreatedResponse({ description: '요청 성공', type: SingleResponseDto })
+  upload(@UploadedFile() file) {
+    return new SingleResponseDto('image', Math.floor(Math.random() * 1000) + 1);
   }
 
-  @Get()
-  findAll() {
-    return this.imagesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.imagesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateImageDto: UpdateImageDto) {
-    return this.imagesService.update(+id, updateImageDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.imagesService.remove(+id);
-  }
 }
