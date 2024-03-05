@@ -31,4 +31,12 @@ export class Feed extends Auditable {
     @JoinColumn({ name: 'location_id' })
     location: Location;
 
+    // 이미지 추가 메서드
+    addImage(image: Image): void {
+        if (!this.images) {
+            this.images = [];
+        }
+        this.images.push(image);
+    }
+
 }
