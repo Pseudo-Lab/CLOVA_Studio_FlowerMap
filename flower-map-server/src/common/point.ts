@@ -1,4 +1,5 @@
 import { InternalServerErrorException } from "@nestjs/common";
+import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
 
 export class Point {
@@ -14,9 +15,11 @@ export class Point {
         }
     }
 
+    @ApiProperty()
     @IsNotEmpty()
     latitude: number;
 
+    @ApiProperty()
     @IsNotEmpty()
     longitude: number;
 

@@ -14,16 +14,16 @@ export class UpdateFeedDto {
     @ApiProperty()
     password: string;
 
-    @ApiProperty()
+    @ApiProperty({ type: Date })
     capturedAt: string;
 
     @ApiProperty()
     floweringStatus: number;
 
-    @ApiProperty()
-    photos: string;
+    @ApiProperty({ type: [Number] })
+    imageIds: number[];
 
     @ApiProperty()
-    location: string;
+    locationId: number;
 
 }

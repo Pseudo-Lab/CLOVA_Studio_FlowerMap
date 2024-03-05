@@ -1,13 +1,29 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiExtraModels, ApiProperty, getSchemaPath } from "@nestjs/swagger";
+import { SimpleResponseFeedDto } from "src/modules/feeds/dto/simple-response-feed.dto";
+import { ResponseLocationDto } from "src/modules/locations/dto/response-location.dto";
 
+@ApiExtraModels(ResponseLocationDto, SimpleResponseFeedDto)
 export class ResponsePageDto<T>{
+
     @ApiProperty()
     total: number;
+
     @ApiProperty()
     offset: number;
+
     @ApiProperty()
     limit: number;
-    @ApiProperty()
+
+    //TODO : 제네릭 타입 고민할것.
+    @ApiProperty({
+        type: [],
+        items: {
+            oneOf: [
+                { $ref: getSchemaPath(ResponseLocationDto) },
+                { $ref: getSchemaPath(SimpleResponseFeedDto) },
+            ]
+        }
+    })
     data: T[]
 
     constructor(total: number,

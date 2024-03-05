@@ -11,7 +11,7 @@ export class CreateFeedDto {
     @ApiProperty()
     password: string;
 
-    @ApiProperty()
+    @ApiProperty({ type: Date })
     capturedAt: Date;
 
     @ApiProperty({ description: '개화상태 레벨입니다. 1 ~ 5단계 별로 나타냅니다.' })
@@ -20,6 +20,6 @@ export class CreateFeedDto {
     @ApiProperty({ description: 'Location 식별자 입니다.' })
     locationId: number;
 
-    @ApiProperty({ description: '사진과 관련된 내용, 관련 내용 개발중입니다.' })
-    photo: string;
+    @ApiProperty({ description: 'Image Id를 배열 형태로 입력, 배열에 입력된 순서대로 index가 결정됨', type: [Number] })
+    imageIds: number[];
 }
