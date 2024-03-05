@@ -1,7 +1,7 @@
 import { Location } from "src/modules/locations/entities/location.entity";
-import { Photo } from "src/modules/photos/entities/photo.entity";
 import { Auditable } from "src/common/auditable.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Image } from "src/modules/images/entities/image.entity";
 
 @Entity()
 export class Feed extends Auditable {
@@ -24,8 +24,8 @@ export class Feed extends Auditable {
     @Column({ name: 'flowering_status' })
     floweringStatus: number;
 
-    @OneToMany(() => Photo, (photo) => photo.feed, { nullable: false })
-    photos: Photo[];
+    @OneToMany(() => Image, (image) => image.feed)
+    images: Image[];
 
     @ManyToOne(() => Location, (location) => location.feeds, { nullable: false })
     @JoinColumn({ name: 'location_id' })

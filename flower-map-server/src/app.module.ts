@@ -3,11 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { FeedsModule } from './modules/feeds/feeds.module';
 import { FlowersModule } from './modules/flowers/flowers.module';
-import { PhotosModule } from './modules/photos/photos.module';
 import { LocationsModule } from './modules/locations/locations.module';
 import { ConfigModule } from '@nestjs/config';
 import { customConfig } from './config/custom.config';
 import { CustomTypeOrmModule } from './config/custom-type-orm.module';
+import { ImagesModule } from './modules/images/images.module';
 
 @Module({
   imports: [
@@ -15,8 +15,8 @@ import { CustomTypeOrmModule } from './config/custom-type-orm.module';
     CustomTypeOrmModule,
     FeedsModule,
     FlowersModule,
-    PhotosModule,
-    LocationsModule
+    LocationsModule,
+    ImagesModule
   ],
   controllers: [AppController],
   providers: [AppService],
