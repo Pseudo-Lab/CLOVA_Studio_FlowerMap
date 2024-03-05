@@ -1,9 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { setupSwagger } from './config/swagger.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // swagger API 문서화 설정
+  setupSwagger(app);
 
   // 데이터 유효성 검사
   app.useGlobalPipes(new ValidationPipe({
