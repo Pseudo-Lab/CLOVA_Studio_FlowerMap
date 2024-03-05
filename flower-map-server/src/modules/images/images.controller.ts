@@ -13,7 +13,7 @@ export class ImagesController {
   @ApiOperation({ summary: 'Image 업로드 (미완)', description: '파일 업로드 받을 예정' })
   @ApiCreatedResponse({ description: '요청 성공', type: SingleResponseDto })
   upload(@UploadedFile() file) {
-    return new SingleResponseDto('image', Math.floor(Math.random() * 1000) + 1);
+    return new SingleResponseDto('Image', Math.floor(Math.random() * 1000) + 1);
   }
 
 }
