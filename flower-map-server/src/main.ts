@@ -8,6 +8,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+  // CORS OFF
+  app.enableCors();
+
   // swagger API 문서화 설정
   setupSwagger(app);
 
