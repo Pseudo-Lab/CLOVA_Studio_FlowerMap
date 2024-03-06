@@ -15,5 +15,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build ./flower-map-server --file Dockerfile --tag flower-map-server:$(date +%s)
+      # run: docker build ./flower-map-server --file Dockerfile --tag flower-map-server:$(date +%s)
       # run: docker build -t flower-map-server .
+      run: docker build ./flower-map-server -t flower-map-server
