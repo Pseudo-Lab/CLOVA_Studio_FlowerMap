@@ -44,17 +44,17 @@ jobs:
 
       # 최신 이미지를 컨테이너화하여 실행시킵니다
       - name: docker run new container
-        run: sudo docker run --name flower-map-server --rm -d -p 3000:3000 ${{ secrets.DOCKERHUB_USERNAME }}/flower-map-server-app
-        env:
-          SERVER_PORT: ${{ secrets.SERVER_PORT }}
-          DB_TYPE: ${{ secrets.DB_TYPE }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_DATABASE: ${{ secrets.DB_DATABASE }}
-          DB_SYNCHRONIZE: ${{ secrets.DB_SYNCHRONIZE }}
-          DB_LOGGING: ${{ secrets.DB_LOGGING }}
+        run: sudo docker run --name flower-map-server --rm -d
+          -e SERVER_PORT=${{ secrets.SERVER_PORT }}
+          -e DB_TYPE=${{ secrets.DB_TYPE }}
+          -e DB_HOST=${{ secrets.DB_HOST }}
+          -e DB_PORT=${{ secrets.DB_PORT }}
+          -e DB_USERNAME=${{ secrets.DB_USERNAME }}
+          -e DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          -e DB_DATABASE=${{ secrets.DB_DATABASE }}
+          -e DB_SYNCHRONIZE=${{ secrets.DB_SYNCHRONIZE }}
+          -e DB_LOGGING=${{ secrets.DB_LOGGING }}
+          -p 3000:3000 ${{ secrets.DOCKERHUB_USERNAME }}/flower-map-server-app
 
       # 미사용 이미지를 정리합니다
       - name: delete old docker image
