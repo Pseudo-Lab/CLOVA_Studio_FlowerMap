@@ -10,12 +10,11 @@ jobs:
 
   build-server-docker-image:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
     - name: Build the Docker image
-      # run: docker build ./flower-map-server --file Dockerfile --tag flower-map-server:$(date +%s)
       run: docker build ./flower-map-server -t ${{ secrets.DOCKERHUB_USERNAME }}/flower-map-server-app
 
     - name: docker login
