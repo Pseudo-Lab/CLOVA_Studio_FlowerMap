@@ -16,5 +16,5 @@ export function setupSwagger(app: INestApplication) {
         .addTag('flower maps')
         .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
+    SwaggerModule.setup('api/v1/docs', app, document);
 }
