@@ -21,7 +21,6 @@ export class LocationsController {
   @ApiCreatedResponse({ description: '요청 성공', type: SingleResponseDto })
   @ApiNotFoundResponse({ description: '존재하지 않는 Flower' })
   async create(@Body() createLocationDto: CreateLocationDto) {
-    console.log(createLocationDto);
     // const location = await this.locationsService.create(createLocationDto);
     return new SingleResponseDto('Location', Math.floor(Math.random() * 1000) + 1);
   }
@@ -59,7 +58,17 @@ export class LocationsController {
   @ApiOkResponse({ description: '요청 성공', type: ResponseLocationDto })
   @ApiNotFoundResponse({ description: '요청한 Locatioon이 존재하지 않음' })
   async findOne(@Param('locationId', ParseIntPipe) locationId: number): Promise<ResponseLocationDto> {
-    return new ResponseLocationDto(await this.locationsService.findOne(locationId));
+    // return new ResponseLocationDto(await this.locationsService.findOne(locationId));
+    const location = new Location();
+    location.locationId = locationId;
+    location.numberAddress = '지번주소';
+    location.roadAddress = '도로명주소';
+    location.coordinates = 'POINT(12.123 23.23443)';
+    const flower = new Flower()
+    flower.flowerId = 23;
+    flower.name = '벚꽃';
+    location.flower = flower;
+    return new ResponseLocationDto(location);
   }
 
   // @Patch(':id')
