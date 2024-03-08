@@ -1,28 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, Query, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, Query, HttpCode, Ip } from '@nestjs/common';
 import { FeedsService } from './feeds.service';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { UpdateFeedDto } from './dto/update-feed.dto';
-import { ApiBadRequestResponse, ApiBody, ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiProperty, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBody, ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ResponseFeedDto } from './dto/response-feed.dto';
 import { ResponsePageDto } from 'src/common/response-page.dto';
 import { Feed } from './entities/feed.entity';
 import { SimpleResponseFeedDto } from './dto/simple-response-feed.dto';
 import { SingleResponseDto } from 'src/common/single-response.dto';
 import { Image } from '../images/entities/image.entity';
+import { LocationsService } from '../locations/locations.service';
 
+// API 문서
 @ApiTags('Feed(게시글) API')
+@ApiBadRequestResponse({ description: '잘못된 요청 형식입니다. (body, query, param 등) [errorCode=V404' })
+
 @Controller('api/v1/feeds')
-@ApiBadRequestResponse({ description: '잘못된 요청 형식입니다. (body, query, param 등)' })
 export class FeedsController {
-  constructor(private readonly feedsService: FeedsService) { }
+  constructor(
+    private readonly feedsService: FeedsService,
+    private readonly locationsService: LocationsService
+  ) { }
+
+  // API 문서
+  @ApiOperation({ summary: 'Feed 생성 (미완)', description: 'Feed 생성을 위한 API 입니다.' })
+  @ApiBody({ type: CreateFeedDto })
+  @ApiCreatedResponse({ description: '요청 성공', type: SingleResponseDto })
+  @ApiNotFoundResponse({ description: 'Image, Location이 존재하지 않습니다. [errorCode=I404 or F404]' })
 
   @Post()
-  @ApiOperation({ summary: 'Feed 생성 (미완)', description: 'Feed 생성을 위한 API 입니다.' })
-  @ApiCreatedResponse({ description: '요청 성공', type: SingleResponseDto })
-  @ApiNotFoundResponse({ description: 'Image, Location이 존재하지 않습니다.' })
-  async create(@Body() createFeedDto: CreateFeedDto) {
-    // const feed = await this.feedsService.create(createFeedDto);
-    return new SingleResponseDto('Feed', Math.floor(Math.random() * 1000) + 1);
+  async create(
+    @Body() createFeedDto: CreateFeedDto,
+    @Ip() userIp: string): Promise<SingleResponseDto> {
+
+    await this.locationsService.existsById(createFeedDto.locationId); // Location 존재 여부 확인
+    createFeedDto.userIp = userIp; // IP주소 설정
+    const feed: Feed = await this.feedsService.create(createFeedDto.toEntity()); // Feed 생성
+
+    return new SingleResponseDto('Feed', feed.feedId);
   }
 
   @Get()
@@ -59,12 +74,11 @@ export class FeedsController {
     const feed = new Feed();
     feed.feedId = feedId;
     feed.content = '반가워요 피드 더미에요!';
-    feed.nickname = `더미${feedId}호`;
     feed.capturedAt = new Date();
     feed.floweringStatus = Math.floor(Math.random() * 5) + 1;
     const image = new Image()
     image.imageId = 1;
-    image.index = 1;
+    image.idx = 1;
     image.originUrl = 'https://item.kakaocdn.net/do/71b0683bd1963c4e24c8ba605e23bac9617ea012db208c18f6e83b1a90a7baa7';
     image.thumbUrl = 'https://item.kakaocdn.net/do/ffd6fd4ddd308f7b129cf04c5ca71ada617ea012db208c18f6e83b1a90a7baa7';
     feed.addImage(image);
