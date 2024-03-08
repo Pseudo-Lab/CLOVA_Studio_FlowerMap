@@ -1,25 +1,30 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsDateString, IsNotEmpty, IsNumber, IsString, Length, Max, Min } from "class-validator";
+import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsDateString, IsNotEmpty, IsNumber, IsString, Length, Matches, Max, Min } from "class-validator";
 import { Feed } from "../entities/feed.entity";
 import { Location } from "src/modules/locations/entities/location.entity";
 
 export class CreateFeedDto {
 
     @ApiProperty({
-        description: '피드에 대한 간단한 설명입니다. [공백포함 1자 이상 300자 이하]',
+        description: '피드에 대한 간단한 설명입니다. [공백포함 10자 이상 200자 이하]',
         example: '피드에 대한 설명 글을 작성합시다.',
         required: true,
     })
     @IsString()
-    @Length(1, 300) //TODO 규칙 다시 확인할 것
+    @Length(10, 200)
     content: string;
 
     @ApiProperty({
-        description: '규칙 미결정',
-        example: '1234',
+        description: `
+        게시글에 대한 비밀번호 입니다.
+        [정규표현식: "^[0-9a-zA-Z]{6}$]" (6자 숫자,영문(소,대문자)]`,
+        example: 'Hello7',
         required: true,
     })
-    @IsNotEmpty() //TODO 규칙 다시 확인할 것
+    @IsNotEmpty()
+    @IsString()
+    @Length(6, 6)
+    @Matches(/^[0-9a-zA-Z]{6}$/)
     password: string;
 
     @ApiProperty({
