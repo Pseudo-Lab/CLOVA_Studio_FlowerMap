@@ -5,4 +5,10 @@ export enum CustomErrorCode {
 
     // Feed
     FEED_NOT_FOUND = 'F404',
+
+    // Location
+    LOCATION_NOT_FOUND = "L404",
+
+    // Image
+    IMAGE_NOT_FOUND = "I404"
 }

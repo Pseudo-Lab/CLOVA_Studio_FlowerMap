@@ -4,6 +4,7 @@ import { UpdateLocationDto } from './dto/update-location.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Location } from './entities/location.entity';
 import { Repository } from 'typeorm';
+import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 
 @Injectable()
 export class LocationsService {
@@ -22,10 +23,16 @@ export class LocationsService {
     return `This action returns all locations`;
   }
 
+  async existsById(locationId: number) {
+    if (!await this.locationsRepository.existsBy({ locationId })) {
+      throw new NotFoundException(CustomErrorCode.LOCATION_NOT_FOUND);
+    }
+  }
+
   async findOne(locationId: number): Promise<Location> {
     const location = await this.locationsRepository.findOneBy({ locationId });
     if (location) return location;
-    else throw new NotFoundException(); //TODO 예외 구체화할것
+    else throw new NotFoundException(CustomErrorCode.LOCATION_NOT_FOUND);
   }
 
   update(id: number, updateLocationDto: UpdateLocationDto) {
