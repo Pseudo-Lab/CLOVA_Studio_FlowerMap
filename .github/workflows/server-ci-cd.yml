@@ -3,8 +3,8 @@ name: Docker Image CI/CD
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  # pull_request:
+    # branches: [ "main" ]
 
 jobs:
   # 도커이미지 빌드 후 도커허브에 푸쉬
