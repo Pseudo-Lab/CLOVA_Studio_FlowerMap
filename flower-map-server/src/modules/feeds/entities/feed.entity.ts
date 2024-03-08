@@ -9,11 +9,11 @@ export class Feed extends Auditable {
     @PrimaryGeneratedColumn({ name: 'feed_id' })
     feedId: number;
 
-    @Column()
-    content: string;
+    @Column({ name: 'user_ip' })
+    userIp: string;
 
     @Column()
-    nickname: string;
+    content: string;
 
     @Column()
     password: string;
@@ -32,11 +32,16 @@ export class Feed extends Auditable {
     location: Location;
 
     // 이미지 추가 메서드
-    addImage(image: Image): void {
-        if (!this.images) {
-            this.images = [];
+    addImage(value: number | Image): void {
+        if (!this.images) this.images = [];
+
+        if (typeof value === 'number') {
+            const image = new Image();
+            image.imageId = value;
+            this.images.push(image);
+        } else {
+            this.images.push(value);
         }
-        this.images.push(image);
     }
 
 }
