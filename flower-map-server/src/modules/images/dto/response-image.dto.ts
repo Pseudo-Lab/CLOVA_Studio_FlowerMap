@@ -7,7 +7,7 @@ export class ResponseImageDto {
     imageId: number;
 
     @ApiProperty()
-    index: number;
+    idx: number;
 
     @ApiProperty()
     originUrl: string;
@@ -17,7 +17,7 @@ export class ResponseImageDto {
 
     constructor(image: Image) {
         this.imageId = image.imageId;
-        this.index = image.index;
+        this.idx = image.idx;
         this.originUrl = image.originUrl;
         this.thumbUrl = image.thumbUrl;
     }

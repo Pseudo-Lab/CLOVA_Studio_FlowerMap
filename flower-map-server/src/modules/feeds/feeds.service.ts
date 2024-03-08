@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFeedDto } from './dto/create-feed.dto';
 import { UpdateFeedDto } from './dto/update-feed.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Feed } from './entities/feed.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class FeedsService {
@@ -12,8 +12,14 @@ export class FeedsService {
     private feedsRepository: Repository<Feed>,
   ) { }
 
-  create(createFeedDto: CreateFeedDto) {
-    return 'This action adds a new feed';
+  private async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt();
+    return await bcrypt.hash(password, salt);
+  }
+
+  async create(feed: Feed) {
+    feed.password = await this.hashPassword(feed.password);
+    return this.feedsRepository.create(feed).save();
   }
 
   findAll() {
