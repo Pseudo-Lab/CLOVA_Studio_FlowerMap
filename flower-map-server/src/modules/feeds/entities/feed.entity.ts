@@ -12,7 +12,7 @@ export class Feed extends Auditable {
     @Column({ name: 'user_ip' })
     userIp: string;
 
-    @Column()
+    @Column({ length: 200 })
     content: string;
 
     @Column()
