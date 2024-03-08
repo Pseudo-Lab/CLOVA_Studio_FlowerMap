@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsDateString, IsNotEmpty, IsNumber, IsString, Length, Max, Min } from "class-validator";
+import { Feed } from "../entities/feed.entity";
+import { Location } from "src/modules/locations/entities/location.entity";
 
 export class CreateFeedDto {
 
@@ -58,5 +60,23 @@ export class CreateFeedDto {
     imageIds: number[];
 
     userIp: string; // controller에서 입력할 것
+
+    toEntity(): Feed {
+        const feed = new Feed()
+
+        feed.userIp = this.userIp;
+        feed.content = this.content;
+        feed.password = this.password;
+        feed.capturedAt = this.capturedAt;
+        feed.floweringStatus = this.floweringStatus;
+        // Image 추가
+        this.imageIds.forEach(imageId => feed.addImage(imageId));
+        // Location 추가
+        const location = new Location();
+        location.locationId = this.locationId;
+        feed.location = location;
+
+        return feed;
+    }
 
 }
