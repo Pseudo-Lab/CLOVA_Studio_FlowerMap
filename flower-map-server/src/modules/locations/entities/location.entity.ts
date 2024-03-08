@@ -1,7 +1,6 @@
 import { Auditable } from "src/common/auditable.entity";
 import { Feed } from "src/modules/feeds/entities/feed.entity";
 import { Flower } from "src/modules/flowers/entities/flower.entity";
-import { Image } from "src/modules/images/entities/image.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
@@ -19,14 +18,11 @@ export class Location extends Auditable {
     @Column({ type: 'point' })
     coordinates: string;
 
-    @OneToMany(() => Feed, (feed) => feed.location)
-    feeds: Feed[];
-
-    @OneToMany(() => Image, (image) => image.location)
-    images: Image[];
-
     @ManyToOne(() => Flower, (flower) => flower.locations, { nullable: false })
     @JoinColumn({ name: 'flower_id' })
     flower: Flower;
+
+    @OneToMany(() => Feed, (feed) => feed.location)
+    feeds: Feed[];
 
 }
