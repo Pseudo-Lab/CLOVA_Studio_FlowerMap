@@ -1,5 +1,4 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ResponseLocationDto } from "src/modules/locations/dto/response-location.dto";
 import { Feed } from "../entities/feed.entity";
 import { ResponseImageDto } from "src/modules/images/dto/response-image.dto";
 
@@ -10,9 +9,6 @@ export class ResponseFeedDto {
 
     @ApiProperty({ description: '피드에 대한 간단한 설명입니다.' })
     content: string;
-
-    @ApiProperty()
-    nickname: string;
 
     @ApiProperty()
     capturedAt: Date;
@@ -32,7 +28,6 @@ export class ResponseFeedDto {
     constructor(feed: Feed) {
         this.feedId = feed.feedId;
         this.content = feed.content;
-        this.nickname = feed.nickname;
         this.capturedAt = feed.capturedAt;
         this.heartsCount = 10;
         this.floweringStatus = feed.floweringStatus;
