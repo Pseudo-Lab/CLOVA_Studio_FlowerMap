@@ -15,8 +15,14 @@ export class Image extends Auditable {
     @Column({ name: 'origin_url' })
     originUrl: string;
 
+    @Column({ name: 'origin_e_tag' })
+    originETag: string;
+
     @Column({ name: 'thumb_url' })
     thumbUrl: string;
+
+    @Column({ name: 'thumb_e_tag' })
+    thumbETag: string;
 
     @Column({ nullable: true })
     idx: number;
@@ -25,7 +31,7 @@ export class Image extends Auditable {
     @JoinColumn({ name: 'feed_id' })
     feed: Feed;
 
-    @ManyToOne(() => Flower, (flower) => flower.images)
+    @ManyToOne(() => Flower, (flower) => flower.images, { nullable: true })
     @JoinColumn({ name: 'flower_id' })
     flower: Flower;
 
