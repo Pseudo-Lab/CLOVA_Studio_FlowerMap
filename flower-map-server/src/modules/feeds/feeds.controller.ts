@@ -10,10 +10,11 @@ import { SimpleResponseFeedDto } from './dto/simple-response-feed.dto';
 import { SingleResponseDto } from 'src/common/single-response.dto';
 import { Image } from '../images/entities/image.entity';
 import { LocationsService } from '../locations/locations.service';
+import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 
 // API 문서
 @ApiTags('Feed(게시글) API')
-@ApiBadRequestResponse({ description: '잘못된 요청 형식입니다. (body, query, param 등) [errorCode=V404' })
+@ApiBadRequestResponse({ description: `잘못된 요청 형식입니다. (body, query, param 등) [errorCode=${CustomErrorCode.VALIDATION_BAD_REQUEST}]` })
 
 @Controller('api/v1/feeds')
 export class FeedsController {
@@ -26,7 +27,7 @@ export class FeedsController {
   @ApiOperation({ summary: 'Feed 생성 (미완)', description: 'Feed 생성을 위한 API 입니다.' })
   @ApiBody({ type: CreateFeedDto })
   @ApiCreatedResponse({ description: '요청 성공', type: SingleResponseDto })
-  @ApiNotFoundResponse({ description: 'Image, Location이 존재하지 않습니다. [errorCode=I404 or F404]' })
+  @ApiNotFoundResponse({ description: `Image, Location이 존재하지 않습니다. [errorCode=${CustomErrorCode.IMAGE_NOT_FOUND} or ${CustomErrorCode.FEED_NOT_FOUND}]` })
 
   @Post()
   async create(
