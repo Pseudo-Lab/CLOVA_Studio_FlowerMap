@@ -45,6 +45,6 @@ export class ImagesUploadService {
 
         // 이미지 url : 엔드포인트/버킷/경로
         const imageUrl = `${this.NCLOUD_STORAGE_ENDPOINT}/${this.NCLOUD_STORAGE_BUCKET_NAME}/${imageDir}`;
-        return { imageUrl, ETag };
+        return { imageUrl, ETag: ETag.substring(1, ETag.length - 1) };
     }
 }
