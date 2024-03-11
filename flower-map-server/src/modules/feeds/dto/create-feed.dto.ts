@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsDateString, IsNotEmpty, IsNumber, IsString, Length, Matches, Max, Min } from "class-validator";
 import { Feed } from "../entities/feed.entity";
 import { Location } from "src/modules/locations/entities/location.entity";
+import { Image } from "src/modules/images/entities/image.entity";
 
 export class CreateFeedDto {
 
@@ -75,7 +76,12 @@ export class CreateFeedDto {
         feed.capturedAt = this.capturedAt;
         feed.floweringStatus = this.floweringStatus;
         // Image 추가
-        this.imageIds.forEach(imageId => feed.addImage(imageId));
+        for (let i = 0; i < this.imageIds.length; i++) {
+            const image = new Image();
+            image.imageId = this.imageIds[i]; // 이미지 id 설정
+            image.idx = i; // 이미지 idx(인덱스) 설정
+            feed.addImage(image);
+        }
         // Location 추가
         const location = new Location();
         location.locationId = this.locationId;
