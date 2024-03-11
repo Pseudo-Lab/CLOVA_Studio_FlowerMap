@@ -10,32 +10,44 @@ import { SimpleResponseFeedDto } from './dto/simple-response-feed.dto';
 import { SingleResponseDto } from 'src/common/single-response.dto';
 import { Image } from '../images/entities/image.entity';
 import { LocationsService } from '../locations/locations.service';
+import { CustomErrorCode } from 'src/common/exception/custom-error-code';
+import { ImagesService } from '../images/images.service';
 
 // API 문서
 @ApiTags('Feed(게시글) API')
-@ApiBadRequestResponse({ description: '잘못된 요청 형식입니다. (body, query, param 등) [errorCode=V404' })
+@ApiBadRequestResponse({ description: `잘못된 요청 형식입니다. (body, query, param 등) [errorCode=${CustomErrorCode.VALIDATION_BAD_REQUEST}]` })
 
 @Controller('api/v1/feeds')
 export class FeedsController {
   constructor(
     private readonly feedsService: FeedsService,
-    private readonly locationsService: LocationsService
+    private readonly locationsService: LocationsService,
+    private readonly imagesService: ImagesService,
   ) { }
 
   // API 문서
-  @ApiOperation({ summary: 'Feed 생성 (미완)', description: 'Feed 생성을 위한 API 입니다.' })
+  @ApiOperation({
+    summary: 'Feed 생성', description: `
+    Feed 생성을 위한 API 입니다.
+    Image표시 순서는 입력 순서대로 설정됩니다.
+  ` })
   @ApiBody({ type: CreateFeedDto })
   @ApiCreatedResponse({ description: '요청 성공', type: SingleResponseDto })
-  @ApiNotFoundResponse({ description: 'Image, Location이 존재하지 않습니다. [errorCode=I404 or F404]' })
+  @ApiNotFoundResponse({ description: `Image, Location이 존재하지 않습니다. [errorCode=${CustomErrorCode.IMAGE_NOT_FOUND} or ${CustomErrorCode.LOCATION_NOT_FOUND}]` })
 
   @Post()
   async create(
     @Body() createFeedDto: CreateFeedDto,
     @Ip() userIp: string): Promise<SingleResponseDto> {
 
-    await this.locationsService.existsById(createFeedDto.locationId); // Location 존재 여부 확인
-    createFeedDto.userIp = userIp; // IP주소 설정
-    const feed: Feed = await this.feedsService.create(createFeedDto.toEntity()); // Feed 생성
+    // Location 존재 여부 확인
+    await this.locationsService.existsById(createFeedDto.locationId);
+    // Image 존재 여부 및 사용 가능 여부 확인
+    await this.imagesService.isUsableImages(createFeedDto.imageIds);
+    // IP주소 설정
+    createFeedDto.userIp = userIp;
+    // Feed 생성
+    const feed: Feed = await this.feedsService.create(createFeedDto.toEntity());
 
     return new SingleResponseDto('Feed', feed.feedId);
   }

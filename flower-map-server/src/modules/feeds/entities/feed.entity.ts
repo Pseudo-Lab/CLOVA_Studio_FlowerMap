@@ -24,7 +24,7 @@ export class Feed extends Auditable {
     @Column({ name: 'flowering_status' })
     floweringStatus: number;
 
-    @OneToMany(() => Image, (image) => image.feed)
+    @OneToMany(() => Image, (image) => image.feed, { cascade: ['insert', 'update'] })
     images: Image[];
 
     @ManyToOne(() => Location, (location) => location.feeds, { nullable: false })
@@ -35,13 +35,15 @@ export class Feed extends Auditable {
     addImage(value: number | Image): void {
         if (!this.images) this.images = [];
 
+        let image: Image;
         if (typeof value === 'number') {
-            const image = new Image();
+            image = new Image();
             image.imageId = value;
-            this.images.push(image);
         } else {
-            this.images.push(value);
+            image = value;
         }
+
+        this.images.push(image);
     }
 
 }
