@@ -1,8 +1,8 @@
 name: Docker Image CI/CD
 
 on:
-  push:
-    branches: [ "main" ]
+  # push:
+    # branches: [ "main" ]
   # pull_request:
     # branches: [ "main" ]
 
@@ -54,6 +54,12 @@ jobs:
           -e DB_DATABASE=${{ secrets.DB_DATABASE }}
           -e DB_SYNCHRONIZE=${{ secrets.DB_SYNCHRONIZE }}
           -e DB_LOGGING=${{ secrets.DB_LOGGING }}
+          -e NCLOUD_STORAGE_ENDPOINT=${{ secrets.NCLOUD_STORAGE_ENDPOINT }}
+          -e NCLOUD_STORAGE_REGION=${{ secrets.NCLOUD_STORAGE_REGION }}
+          -e NCLOUD_STORAGE_ACCESS_KEY_ID=${{ secrets.NCLOUD_STORAGE_ACCESS_KEY_ID }}
+          -e NCLOUD_STORAGE_SECRET_KEY=${{ secrets.NCLOUD_STORAGE_SECRET_KEY }}
+          -e NCLOUD_STORAGE_BUCKET_NAME=${{ secrets.NCLOUD_STORAGE_BUCKET_NAME }}
+          -e NCLOUD_STORAGE_FOLDER_NAME=${{ secrets.NCLOUD_STORAGE_FOLDER_NAME }}
           -p 3000:3000 ${{ secrets.DOCKERHUB_USERNAME }}/flower-map-server-app
 
       # 미사용 이미지를 정리합니다
