@@ -44,7 +44,7 @@ jobs:
 
       # 최신 이미지를 컨테이너화하여 실행시킵니다
       - name: docker run new container
-        run: sudo docker run --name --rm -d flower-map-server
+        run: sudo docker run --rm -d --name flower-map-server
           -e SERVER_PORT=${{ secrets.SERVER_PORT }}
           -e DB_TYPE=${{ secrets.DB_TYPE }}
           -e DB_HOST=${{ secrets.DB_HOST }}
