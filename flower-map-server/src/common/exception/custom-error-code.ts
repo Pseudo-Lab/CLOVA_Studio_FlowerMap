@@ -11,5 +11,5 @@ export enum CustomErrorCode {
 
     // Image
     IMAGE_NOT_FOUND = 'I404',
-    IMAGE_UNSUPPORTED_FORMAT = 'IU400',
+    IMAGE_UNSUPPORTED_EXT = 'IUE400',
 }
