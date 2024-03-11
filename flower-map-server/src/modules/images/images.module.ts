@@ -10,5 +10,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [TypeOrmModule.forFeature([Image])],
   controllers: [ImagesController],
   providers: [ImagesService, ImagesEditingService, ImagesUploadService],
+  exports: [ImagesService]
 })
 export class ImagesModule { }
