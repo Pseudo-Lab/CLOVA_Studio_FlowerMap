@@ -1,4 +1,3 @@
-import { Point } from "src/common/point";
 import { Location } from "../entities/location.entity";
 import { ApiProperty } from "@nestjs/swagger";
 import { ResponseFlowerDto } from "src/modules/flowers/dto/response-flower.dto";
@@ -14,8 +13,8 @@ export class ResponseLocationDto {
     @ApiProperty()
     roadAddress: string;
 
-    @ApiProperty({ type: Point })
-    coordinates: Point;
+    @ApiProperty({ type: [Number, Number], example: [37.2422, 131.8676] })
+    coordinates: number[];
 
     @ApiProperty({ type: ResponseFlowerDto })
     flower: ResponseFlowerDto;
@@ -24,7 +23,7 @@ export class ResponseLocationDto {
         this.locationId = location.locationId;
         this.numberAddress = location.numberAddress;
         this.roadAddress = location.roadAddress;
-        this.coordinates = new Point(location.coordinates);
+        this.coordinates = location.coordinates;
         this.flower = location.flower;
     }
 

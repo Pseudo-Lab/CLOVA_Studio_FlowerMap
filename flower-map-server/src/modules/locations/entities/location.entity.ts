@@ -19,10 +19,10 @@ export class Location extends Auditable {
     @Column({
         type: 'point', transformer: {
             from: (value: string) => value.substring(6, value.length - 1).split(' ').map(parseFloat),
-            to: (value: [number, number]) => `POINT(${value[0]} ${value[1]})`
+            to: (value: number[]) => `POINT(${value[0]} ${value[1]})`
         }
     })
-    coordinates: [number, number]; // 위도, 경도
+    coordinates: number[]; // 위도, 경도
 
     @ManyToOne(() => Flower, (flower) => flower.locations, { nullable: false })
     @JoinColumn({ name: 'flower_id' })

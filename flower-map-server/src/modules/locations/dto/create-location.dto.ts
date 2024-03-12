@@ -1,28 +1,33 @@
 import { Flower } from "src/modules/flowers/entities/flower.entity";
-import { Point } from "../../../common/point";
 import { Location } from "../entities/location.entity";
-import { IsNotEmpty, IsNumber, IsString, ValidateNested } from "class-validator";
-import { Type } from "class-transformer";
+import { ArrayMaxSize, ArrayMinSize, IsNumber, IsString, Min } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateLocationDto {
 
-    @IsString()
     @ApiProperty()
+    @IsString()
     numberAddress: string;
 
-    @IsString()
     @ApiProperty()
+    @IsString()
     roadAddress: string;
 
-    @IsNotEmpty()
-    // @ValidateNested()
-    // @Type(() => Point)
-    @ApiProperty({ type: Point })
-    coordinates: Point;
+    @ApiProperty({
+        type: [Number, Number],
+        description: '[위도, 경도]',
+        example: [37.2422, 131.8676],
+        isArray: true,
+        required: true,
+    })
+    @ArrayMinSize(2)
+    @ArrayMaxSize(2)
+    @IsNumber({}, { each: true })
+    coordinates: number[];
 
+    @ApiProperty({ example: 1 })
     @IsNumber()
-    @ApiProperty()
+    @Min(1)
     flowerId: number;
 
     public toEntity(): Location {
@@ -31,7 +36,7 @@ export class CreateLocationDto {
         flower.flowerId = this.flowerId;
         location.numberAddress = this.numberAddress;
         location.roadAddress = this.roadAddress;
-        location.coordinates = this.coordinates.toPointString();
+        location.coordinates = this.coordinates;
         location.flower = flower;
         return location;
     }
