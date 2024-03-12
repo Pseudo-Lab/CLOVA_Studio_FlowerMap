@@ -17,6 +17,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
                 database: configService.get<string>('DB_DATABASE'),
                 synchronize: configService.get<boolean>('DB_SYNCHRONIZE'),
                 logging: configService.get('DB_LOGGING'),
+                legacySpatialSupport: false, //mysql 사용시 false로 설정할 것
             }),
         }),
     ],
