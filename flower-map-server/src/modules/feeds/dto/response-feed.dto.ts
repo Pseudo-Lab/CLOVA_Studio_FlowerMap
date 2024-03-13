@@ -17,25 +17,21 @@ export class ResponseFeedDto {
     @ApiProperty()
     heartsCount: number;
 
-    @ApiProperty({ description: '개화상태 레벨입니다. 1 ~ 5단계 별로 나타냅니다.' })
-    floweringStatus: number;
-
     @ApiProperty({ description: '사진과 관련된 내용, 관련 내용 개발중입니다.', type: [ResponseImageDto] })
-    responseImageDtos: ResponseImageDto[];
+    images: ResponseImageDto[];
 
     @ApiProperty()
-    responseLocationDto: ResponseLocationDto;
+    location: ResponseLocationDto;
 
     constructor(feed: Feed) {
         this.feedId = feed.feedId;
         this.content = feed.content;
         this.capturedAt = feed.capturedAt;
         this.heartsCount = 10;
-        this.floweringStatus = feed.floweringStatus;
-        this.responseImageDtos = [];
+        this.images = [];
         for (let i = 0; i < feed.images.length; i++) {
-            this.responseImageDtos.push(new ResponseImageDto(feed.images[i]));
+            this.images.push(new ResponseImageDto(feed.images[i]));
         }
-        this.responseLocationDto = new ResponseLocationDto(feed.location);
+        this.location = new ResponseLocationDto(feed.location);
     }
 }

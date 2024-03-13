@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Image } from "../entities/image.entity";
+import { ResponseFlowerDto } from "src/modules/flowers/dto/response-flower.dto";
 
 export class ResponseImageDto {
 
@@ -21,6 +22,12 @@ export class ResponseImageDto {
     @ApiProperty()
     thumbETag: string;
 
+    @ApiProperty()
+    flower: ResponseFlowerDto;
+
+    @ApiProperty()
+    floweringStatus: number;
+
     constructor(image: Image) {
         this.imageId = image.imageId;
         this.idx = image.idx;
@@ -28,6 +35,8 @@ export class ResponseImageDto {
         this.originETag = image.originETag;
         this.thumbUrl = image.thumbUrl;
         this.thumbETag = image.thumbETag;
+        this.flower = new ResponseFlowerDto(image.flower);
+        this.floweringStatus = image.floweringStatus;
     }
 
 }

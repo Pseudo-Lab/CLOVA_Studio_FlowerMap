@@ -21,9 +21,6 @@ export class Feed extends Auditable {
     @Column({ type: 'datetime', width: 0, name: 'captured_at' })
     capturedAt: Date;
 
-    @Column({ name: 'flowering_status' })
-    floweringStatus: number;
-
     @OneToMany(() => Image, (image) => image.feed, { cascade: ['insert', 'update'] })
     images: Image[];
 

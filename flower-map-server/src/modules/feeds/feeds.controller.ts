@@ -66,7 +66,6 @@ export class FeedsController {
       const feed = new Feed();
       feed.feedId = index + 1;
       feed.capturedAt = new Date();
-      feed.floweringStatus = Math.floor(Math.random() * 5) + 1;
       const image = new Image()
       image.originUrl = 'https://item.kakaocdn.net/do/71b0683bd1963c4e24c8ba605e23bac9617ea012db208c18f6e83b1a90a7baa7';
       image.thumbUrl = 'https://item.kakaocdn.net/do/ffd6fd4ddd308f7b129cf04c5ca71ada617ea012db208c18f6e83b1a90a7baa7';

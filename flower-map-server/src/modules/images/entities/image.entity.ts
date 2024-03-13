@@ -35,4 +35,6 @@ export class Image extends Auditable {
     @JoinColumn({ name: 'flower_id' })
     flower: Flower;
 
+    @Column({ name: 'flowering_status' })
+    floweringStatus: number;
 }
