@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, Query, HttpCode, Ip } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, Query, HttpCode, Ip, ParseIntPipe } from '@nestjs/common';
 import { FeedsService } from './feeds.service';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { UpdateFeedDto } from './dto/update-feed.dto';
@@ -12,6 +12,7 @@ import { Image } from '../images/entities/image.entity';
 import { LocationsService } from '../locations/locations.service';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 import { ImagesService } from '../images/images.service';
+import { PasswordDto } from './dto/password.dto';
 
 // API 문서
 @ApiTags('Feed(게시글) API')
@@ -83,7 +84,7 @@ export class FeedsController {
   @ApiNotFoundResponse({ description: `요청하신 Feed가 존재하지 않습니다. [errorCode=${CustomErrorCode.FEED_NOT_FOUND}]` })
 
   @Get(':feedId')
-  async findOne(@Param('feedId') feedId: number): Promise<ResponseFeedDto> {
+  async findOne(@Param('feedId', ParseIntPipe) feedId: number): Promise<ResponseFeedDto> {
     return new ResponseFeedDto(await this.feedsService.findOne(feedId));
   }
 
@@ -98,16 +99,18 @@ export class FeedsController {
     // return this.feedsService.update(feedId, updateFeedDto);
   }
 
+  // API 문서화
+  @ApiOperation({ summary: 'Feed 삭제', description: '특정 Feed를 삭제합니다.' })
+  @ApiBody({ type: PasswordDto })
+  @ApiNoContentResponse({ description: '요청 성공' })
+  @ApiNotFoundResponse({ description: `요청하신 Feed가 존재하지 않습니다. [errorCode=${CustomErrorCode.FEED_NOT_FOUND}]` })
+  @ApiUnauthorizedResponse({ description: `잘못된 비밀번호 [errorCode=${CustomErrorCode.FEED_UNAUTHORIZED}]` })
+
   @Delete(':feedId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Feed 삭제 (미완)', description: '특정 Feed를 삭제합니다.<br>password : 비밀번호 확인을 위해 필수' })
-  @ApiBody({ schema: { type: 'object', properties: { password: { type: 'string' } } } })
-  @ApiNoContentResponse({ description: '요청 성공' })
-  @ApiNotFoundResponse({ description: '요청하신 Feed가 존재하지 않습니다.' })
-  @ApiUnauthorizedResponse({ description: '잘못된 비밀번호' })
-  remove(@Param('feedId') feedId: number,
-    @Body('password') password: string) {
+  async remove(@Param('feedId', ParseIntPipe) feedId: number,
+    @Body() passwordDto: PasswordDto): Promise<void> {
+    await this.feedsService.remove(feedId, passwordDto.password);
     return;
-    // return this.feedsService.remove(+feedId);
   }
 }

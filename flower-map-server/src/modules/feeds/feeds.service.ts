@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UpdateFeedDto } from './dto/update-feed.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Feed } from './entities/feed.entity';
@@ -16,6 +16,11 @@ export class FeedsService {
   private async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt();
     return await bcrypt.hash(password, salt);
+  }
+
+  private async verifyPassword(inputPassword: string, dbPassword: string): Promise<void> {
+    const result = await bcrypt.compare(inputPassword, dbPassword);
+    if (!result) throw new UnauthorizedException(CustomErrorCode.FEED_UNAUTHORIZED);
   }
 
   async create(feed: Feed) {
@@ -42,7 +47,13 @@ export class FeedsService {
     return `This action updates a #${id} feed`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} feed`;
+  async remove(feedId: number, inputPassword: string): Promise<void> {
+    // 게시글 조회
+    const feed = await this.findOne(feedId);
+    // 비밀번호 검사 -> 통과시 아무일 없음, 실패시 예외발생
+    await this.verifyPassword(inputPassword, feed.password);
+    // 게시글 삭제 진행
+    await feed.softRemove()
+    return;
   }
 }
