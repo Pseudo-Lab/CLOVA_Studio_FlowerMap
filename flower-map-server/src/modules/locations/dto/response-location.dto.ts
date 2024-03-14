@@ -16,15 +16,20 @@ export class ResponseLocationDto {
     @ApiProperty({ type: [Number, Number], example: [37.2422, 131.8676] })
     coordinates: number[];
 
-    @ApiProperty({ type: ResponseFlowerDto })
-    flower: ResponseFlowerDto;
+    @ApiProperty({
+        type: ResponseFlowerDto,
+        isArray: true
+    })
+    flowers: ResponseFlowerDto[] = [];
 
     constructor(location: Location) {
         this.locationId = location.locationId;
         this.numberAddress = location.numberAddress;
         this.roadAddress = location.roadAddress;
         this.coordinates = location.coordinates;
-        this.flower = location.flower;
+        if (location.flowers) {
+            location.flowers.forEach(flower => this.flowers.push(new ResponseFlowerDto(flower)));
+        }
     }
 
 }

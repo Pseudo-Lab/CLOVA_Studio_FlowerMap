@@ -1,7 +1,7 @@
 import { Auditable } from "src/common/auditable.entity";
 import { Feed } from "src/modules/feeds/entities/feed.entity";
 import { Flower } from "src/modules/flowers/entities/flower.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Location extends Auditable {
@@ -24,11 +24,23 @@ export class Location extends Auditable {
     })
     coordinates: number[]; // 위도, 경도
 
-    @ManyToOne(() => Flower, (flower) => flower.locations, { nullable: false })
-    @JoinColumn({ name: 'flower_id' })
-    flower: Flower;
+    @ManyToMany(() => Flower)
+    @JoinTable({
+        name: 'location_flower', // 연결 테이블의 이름
+        joinColumn: { name: 'location_id' }, // 현재 엔티티의 열 이름
+        inverseJoinColumn: { name: 'flower_id' } // 대상 엔티티의 열 이름
+    })
+    flowers: Flower[];
 
     @OneToMany(() => Feed, (feed) => feed.location)
     feeds: Feed[];
 
+    // 편의 메서드
+    addFlower(flowerId: number): void {
+        if (!this.flowers) this.flowers = [];
+
+        const flower = new Flower();
+        flower.flowerId = flowerId;
+        this.flowers.push(flower);
+    }
 }
