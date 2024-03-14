@@ -5,14 +5,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Feed } from './entities/feed.entity';
 import { LocationsModule } from '../locations/locations.module';
 import { ImagesModule } from '../images/images.module';
+import { Heart } from './entities/heart.entity';
+import { HeartsService } from './hearts.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Feed]),
+    TypeOrmModule.forFeature([Feed, Heart]),
     LocationsModule,
     ImagesModule,
   ],
   controllers: [FeedsController],
-  providers: [FeedsService],
+  providers: [FeedsService, HeartsService],
 })
 export class FeedsModule { }
