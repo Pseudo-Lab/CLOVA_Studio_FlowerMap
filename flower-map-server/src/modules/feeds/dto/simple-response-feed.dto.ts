@@ -16,18 +16,11 @@ export class SimpleResponseFeedDto {
     @ApiProperty()
     image: ResponseImageDto;
 
-    @ApiProperty()
-    location: Object;
-
     constructor(feed: Feed) {
         this.feedId = feed.feedId;
         this.capturedAt = feed.capturedAt;
         this.heartsCount = 10;
         this.image = new ResponseImageDto(feed.images[0]);
-        this.location = {
-            numberAddress: '지번주소',
-            roadAddress: '도로명주소'
-        }
     }
 
 }
