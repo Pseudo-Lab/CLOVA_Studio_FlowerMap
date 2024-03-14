@@ -34,11 +34,11 @@ export class FeedsService {
 
   /**
    * 특정 Feed에 대한 정보 가져오기
-   * 연관관계 : Image, Images[].flower, Location
+   * 연관관계 : Image, Images[].flower, Location, Heart
    */
   // TODO Heart 관련
   async findOne(feedId: number): Promise<Feed> {
-    const feed = await this.feedsRepository.findOne({ where: { feedId }, relations: ['images', 'images.flower', 'location'] });
+    const feed = await this.feedsRepository.findOne({ where: { feedId }, relations: ['images', 'images.flower', 'location', 'hearts'] });
     if (!feed) throw new NotFoundException(CustomErrorCode.FEED_NOT_FOUND);
     else return feed;
   }
