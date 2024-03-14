@@ -19,7 +19,9 @@ export class SimpleResponseFeedDto {
     constructor(feed: Feed) {
         this.feedId = feed.feedId;
         this.capturedAt = feed.capturedAt;
-        this.heartsCount = 10;
+        this.heartsCount = feed.hearts
+            ? feed.hearts.length
+            : 0;
         this.image = new ResponseImageDto(feed.images[0]);
     }
 

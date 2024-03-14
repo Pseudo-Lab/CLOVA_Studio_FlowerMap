@@ -27,7 +27,9 @@ export class ResponseFeedDto {
         this.feedId = feed.feedId;
         this.content = feed.content;
         this.capturedAt = feed.capturedAt;
-        this.heartsCount = 10;
+        this.heartsCount = feed.hearts
+            ? feed.hearts.length
+            : 0;
         this.images = [];
         for (let i = 0; i < feed.images.length; i++) {
             this.images.push(new ResponseImageDto(feed.images[i]));
