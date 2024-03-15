@@ -21,8 +21,10 @@ export class SimpleResponseFeedDto {
         this.capturedAt = feed.capturedAt;
         this.heartsCount = feed.hearts
             ? feed.hearts.length
-            : 0;
-        this.image = new ResponseImageDto(feed.images[0]);
+            : feed.heartCount;
+        this.image = feed.images && feed.images.length > 0
+            ? new ResponseImageDto(feed.images[0])
+            : null;
     }
 
 }

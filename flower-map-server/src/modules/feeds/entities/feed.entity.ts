@@ -32,6 +32,8 @@ export class Feed extends Auditable {
     @OneToMany(() => Heart, (heart) => heart.feed, { cascade: ['remove', 'soft-remove'] })
     hearts: Heart[];
 
+    heartCount: number;
+
     // 이미지 추가 메서드
     addImage(value: number | Image): void {
         if (!this.images) this.images = [];
