@@ -1,11 +1,17 @@
 import { Location } from "../entities/location.entity";
-import { ArrayMaxSize, ArrayMinSize, IsNumber, IsString, Min } from "class-validator";
+import { ArrayMaxSize, ArrayMinSize, IsNumber, IsString, Length, Matches, Min, MinLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateLocationDto {
 
-    @ApiProperty()
+    @ApiProperty({
+        description: `
+        장소명 제약 조건: 2~15자, 영문, 숫자, 한글, 특수문자 ()<>[]{} 허용
+        ^[a-zA-Z가-힣0-9()<>[\]{}]*$
+    ` })
     @IsString()
+    @Matches(/^[a-zA-Z가-힣0-9()<>[\]{}]*$/)
+    @Length(2, 15)
     name: string;
 
     @ApiProperty()
@@ -39,6 +45,7 @@ export class CreateLocationDto {
 
     public toEntity(): Location {
         const location = new Location()
+        location.name = this.name;
         location.numberAddress = this.numberAddress;
         location.roadAddress = this.roadAddress;
         location.coordinates = this.coordinates;

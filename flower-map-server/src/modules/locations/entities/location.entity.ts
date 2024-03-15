@@ -9,7 +9,7 @@ export class Location extends Auditable {
     @PrimaryGeneratedColumn({ name: 'location_id' })
     locationId: number;
 
-    @Column()
+    @Column({ length: 15 })
     name: string;
 
     @Column({ name: 'number_address' })
