@@ -8,11 +8,11 @@ import { ResponsePageDto } from 'src/common/response-page.dto';
 import { Feed } from './entities/feed.entity';
 import { SimpleResponseFeedDto } from './dto/simple-response-feed.dto';
 import { SingleResponseDto } from 'src/common/single-response.dto';
-import { Image } from '../images/entities/image.entity';
 import { LocationsService } from '../locations/locations.service';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 import { ImagesService } from '../images/images.service';
 import { PasswordDto } from './dto/password.dto';
+import { RequestQueriesFeedDto } from './dto/request-queries-feed.dto';
 
 // API 문서
 @ApiTags('Feed(게시글) API')
@@ -53,28 +53,29 @@ export class FeedsController {
     return new SingleResponseDto('Feed', feed.feedId);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Feed 검색 (미완)', description: 'Feed 검색을 위한 API 입니다.' })
-  @ApiOkResponse({ description: '요청 성공', type: ResponsePageDto<SimpleResponseFeedDto> })
-  findAll(
-    @Query('query') query: string,
-    @Query('sort') sort: 'ASC' | 'DESC',
-    @Query('limit') limit: number,
-    @Query('offset') offset: number) {
-    const data = [];
-    for (let index = 0; index < limit; index++) {
-      const feed = new Feed();
-      feed.feedId = index + 1;
-      feed.capturedAt = new Date();
-      const image = new Image()
-      image.originUrl = 'https://item.kakaocdn.net/do/71b0683bd1963c4e24c8ba605e23bac9617ea012db208c18f6e83b1a90a7baa7';
-      image.thumbUrl = 'https://item.kakaocdn.net/do/ffd6fd4ddd308f7b129cf04c5ca71ada617ea012db208c18f6e83b1a90a7baa7';
-      feed.addImage(image);
+  // API 문서화 데코레이터
+  @ApiOperation({
+    summary: 'Feed 다건 조회 (locationId)',
+    description: `
+    locationId로 Feed들을 조회하기 위한 API 입니다.
+    각 정렬방법(heart, feedId)에 따라 내림차순 정렬하여 조회합니다.
+    이미지와 꽃은 각 Feed의 대표 이미지와 꽃을 가져옵니다.
+  ` })
+  @ApiOkResponse({
+    description: '요청 성공',
+    content: { 'application/json': { example: { total: 3321, offset: 0, limit: 10, data: ['SimpleResponseFeedDto ...(스키마 하단참조)'] } } }
+  })
+  // API
+  @Get('locations/:locationId')
+  async getFeedsByLocationId(
+    @Param('locationId') locationId: number,
+    @Query() queries: RequestQueriesFeedDto): Promise<ResponsePageDto<SimpleResponseFeedDto>> {
 
-      data[index] = new SimpleResponseFeedDto(feed);
-    }
-    return new ResponsePageDto<SimpleResponseFeedDto>(1000, offset, limit, data);
-    // return this.feedsService.findAll();
+    const { orderBy, limit, offset } = queries;
+    const [feeds, total] = await this.feedsService.findAllByLocationId(locationId, orderBy, limit, offset);
+    const data = feeds.map(feed => new SimpleResponseFeedDto(feed));
+
+    return new ResponsePageDto<SimpleResponseFeedDto>(total, offset, limit, data);
   }
 
   // API 문서

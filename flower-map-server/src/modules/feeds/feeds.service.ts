@@ -28,8 +28,36 @@ export class FeedsService {
     return this.feedsRepository.create(feed).save();
   }
 
-  findAll() {
-    return `This action returns all feeds`;
+  async findAllByLocationId(locationId: number, orderBy: 'feedId' | 'heart', limit: number, offset: number): Promise<[Feed[], number]> {
+    // 베이스 쿼리
+    const baseQuery = this.feedsRepository
+      .createQueryBuilder('feed')
+      .leftJoinAndSelect('feed.images', 'image', 'image.idx = :idx', { idx: 0 })
+      .leftJoin('feed.hearts', 'heart')
+      .addSelect('COUNT(heart.heart_id)', 'heartCount') // hearts의 수를 선택하고 heartCount라는 별칭을 부여합니다.
+      .where('feed.location.locationId = :locationId', { locationId })
+      .groupBy('feed.feed_id')
+      .take(limit)
+      .skip(offset);
+
+    // 쿼리에 맞는 갯수
+    const total = await baseQuery.getCount();
+
+    let query;
+    // 최신순 정렬
+    if (orderBy === 'feedId') {
+      query = baseQuery.orderBy('feed.feedId', 'DESC');
+    } else {
+      // heart 많은 순 정렬
+      query = baseQuery
+        .orderBy('heartCount', 'DESC')
+        .addOrderBy('feed.feedId', 'DESC');
+    }
+
+    const { raw, entities } = await query.getRawAndEntities();
+    entities.map((feed, index) => feed.heartCount = parseInt(raw[index].heartCount))
+
+    return [entities, total];
   }
 
   /**
