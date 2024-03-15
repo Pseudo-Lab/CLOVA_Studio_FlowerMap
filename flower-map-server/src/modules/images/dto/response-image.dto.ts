@@ -35,7 +35,9 @@ export class ResponseImageDto {
         this.originETag = image.originETag;
         this.thumbUrl = image.thumbUrl;
         this.thumbETag = image.thumbETag;
-        this.flower = new ResponseFlowerDto(image.flower);
+        this.flower = image.flower
+            ? new ResponseFlowerDto(image.flower)
+            : null;
         this.floweringStatus = image.floweringStatus;
     }
 
