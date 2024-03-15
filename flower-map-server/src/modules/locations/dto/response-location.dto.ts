@@ -8,6 +8,9 @@ export class ResponseLocationDto {
     locationId: number;
 
     @ApiProperty()
+    name: string;
+
+    @ApiProperty()
     numberAddress: string;
 
     @ApiProperty()
@@ -24,6 +27,7 @@ export class ResponseLocationDto {
 
     constructor(location: Location) {
         this.locationId = location.locationId;
+        this.name = location.name;
         this.numberAddress = location.numberAddress;
         this.roadAddress = location.roadAddress;
         this.coordinates = location.coordinates;
