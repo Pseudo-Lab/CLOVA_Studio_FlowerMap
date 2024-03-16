@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsDateString, IsNotEmpty, IsNumber, IsString, Length, Matches, Max, Min } from "class-validator";
+import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsDateString, IsNotEmpty, IsNumber, IsString, Length, Matches, Min } from "class-validator";
 import { Feed } from "../entities/feed.entity";
 import { Location } from "src/modules/locations/entities/location.entity";
 import { Image } from "src/modules/images/entities/image.entity";
@@ -37,15 +37,6 @@ export class CreateFeedDto {
     capturedAt: Date;
 
     @ApiProperty({
-        description: '개화상태 레벨입니다. 1 ~ 5단계 별로 나타냅니다. [1이상 5이하]',
-        example: 1,
-        required: true,
-    })
-    @Min(1)
-    @Max(5)
-    floweringStatus: number;
-
-    @ApiProperty({
         description: 'Location 식별자 입니다. [1이상]',
         example: 1,
         required: true,
@@ -74,7 +65,6 @@ export class CreateFeedDto {
         feed.content = this.content;
         feed.password = this.password;
         feed.capturedAt = this.capturedAt;
-        feed.floweringStatus = this.floweringStatus;
         // Image 추가
         for (let i = 0; i < this.imageIds.length; i++) {
             const image = new Image();

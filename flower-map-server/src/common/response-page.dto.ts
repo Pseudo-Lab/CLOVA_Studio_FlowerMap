@@ -16,13 +16,8 @@ export class ResponsePageDto<T>{
 
     //TODO : 제네릭 타입 고민할것.
     @ApiProperty({
-        type: [],
-        items: {
-            oneOf: [
-                { $ref: getSchemaPath(ResponseLocationDto) },
-                { $ref: getSchemaPath(SimpleResponseFeedDto) },
-            ]
-        }
+        type: Object,
+        isArray: true
     })
     data: T[]
 

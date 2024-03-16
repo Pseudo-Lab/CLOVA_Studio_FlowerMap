@@ -1,38 +1,55 @@
-import { Flower } from "src/modules/flowers/entities/flower.entity";
-import { Point } from "../../../common/point";
 import { Location } from "../entities/location.entity";
-import { IsNotEmpty, IsNumber, IsString, ValidateNested } from "class-validator";
-import { Type } from "class-transformer";
+import { ArrayMaxSize, ArrayMinSize, IsNumber, IsString, Length, Matches, Min, MinLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateLocationDto {
 
+    @ApiProperty({
+        description: `
+        장소명 제약 조건: 2~15자, 영문, 숫자, 한글, 특수문자 ()<>[]{} 허용
+        ^[a-zA-Z가-힣0-9()<>[\]{}]*$
+    ` })
     @IsString()
+    @Matches(/^[a-zA-Z가-힣0-9()<>[\]{}]*$/)
+    @Length(2, 15)
+    name: string;
+
     @ApiProperty()
+    @IsString()
     numberAddress: string;
 
-    @IsString()
     @ApiProperty()
+    @IsString()
     roadAddress: string;
 
-    @IsNotEmpty()
-    // @ValidateNested()
-    // @Type(() => Point)
-    @ApiProperty({ type: Point })
-    coordinates: Point;
+    @ApiProperty({
+        type: Number,
+        description: '[위도, 경도]',
+        example: [37.2422, 131.8676],
+        isArray: true,
+        required: true,
+    })
+    @ArrayMinSize(2)
+    @ArrayMaxSize(2)
+    @IsNumber({}, { each: true })
+    coordinates: number[];
 
-    @IsNumber()
-    @ApiProperty()
-    flowerId: number;
+    @ApiProperty({
+        type: Number,
+        isArray: true,
+        example: [1, 2]
+    })
+    @ArrayMinSize(1)
+    @Min(1, { each: true })
+    flowerIds: number[];
 
     public toEntity(): Location {
         const location = new Location()
-        const flower = new Flower();
-        flower.flowerId = this.flowerId;
+        location.name = this.name;
         location.numberAddress = this.numberAddress;
         location.roadAddress = this.roadAddress;
-        location.coordinates = this.coordinates.toPointString();
-        location.flower = flower;
+        location.coordinates = this.coordinates;
+        this.flowerIds.forEach(flowerId => location.addFlower(flowerId));
         return location;
     }
 
