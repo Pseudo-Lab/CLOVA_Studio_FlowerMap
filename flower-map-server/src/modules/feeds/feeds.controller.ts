@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, Query, HttpCode, Ip } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, Query, HttpCode, Ip, ParseIntPipe } from '@nestjs/common';
 import { FeedsService } from './feeds.service';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { UpdateFeedDto } from './dto/update-feed.dto';
@@ -8,86 +8,84 @@ import { ResponsePageDto } from 'src/common/response-page.dto';
 import { Feed } from './entities/feed.entity';
 import { SimpleResponseFeedDto } from './dto/simple-response-feed.dto';
 import { SingleResponseDto } from 'src/common/single-response.dto';
-import { Image } from '../images/entities/image.entity';
 import { LocationsService } from '../locations/locations.service';
+import { CustomErrorCode } from 'src/common/exception/custom-error-code';
+import { ImagesService } from '../images/images.service';
+import { PasswordDto } from './dto/password.dto';
+import { RequestQueriesFeedDto } from './dto/request-queries-feed.dto';
 
 // API 문서
 @ApiTags('Feed(게시글) API')
-@ApiBadRequestResponse({ description: '잘못된 요청 형식입니다. (body, query, param 등) [errorCode=V404' })
+@ApiBadRequestResponse({ description: `잘못된 요청 형식입니다. (body, query, param 등) [errorCode=${CustomErrorCode.VALIDATION_BAD_REQUEST}]` })
 
 @Controller('api/v1/feeds')
 export class FeedsController {
   constructor(
     private readonly feedsService: FeedsService,
-    private readonly locationsService: LocationsService
+    private readonly locationsService: LocationsService,
+    private readonly imagesService: ImagesService,
   ) { }
 
   // API 문서
-  @ApiOperation({ summary: 'Feed 생성 (미완)', description: 'Feed 생성을 위한 API 입니다.' })
+  @ApiOperation({
+    summary: 'Feed 생성', description: `
+    Feed 생성을 위한 API 입니다.
+    Image표시 순서는 입력 순서대로 설정됩니다.
+  ` })
   @ApiBody({ type: CreateFeedDto })
   @ApiCreatedResponse({ description: '요청 성공', type: SingleResponseDto })
-  @ApiNotFoundResponse({ description: 'Image, Location이 존재하지 않습니다. [errorCode=I404 or F404]' })
+  @ApiNotFoundResponse({ description: `Image, Location이 존재하지 않습니다. [errorCode=${CustomErrorCode.IMAGE_NOT_FOUND} or ${CustomErrorCode.LOCATION_NOT_FOUND}]` })
 
   @Post()
   async create(
     @Body() createFeedDto: CreateFeedDto,
     @Ip() userIp: string): Promise<SingleResponseDto> {
 
-    await this.locationsService.existsById(createFeedDto.locationId); // Location 존재 여부 확인
-    createFeedDto.userIp = userIp; // IP주소 설정
-    const feed: Feed = await this.feedsService.create(createFeedDto.toEntity()); // Feed 생성
+    // Location 존재 여부 확인
+    await this.locationsService.existsById(createFeedDto.locationId);
+    // Image 존재 여부 및 사용 가능 여부 확인
+    await this.imagesService.isUsableImages(createFeedDto.imageIds);
+    // IP주소 설정
+    createFeedDto.userIp = userIp;
+    // Feed 생성
+    const feed: Feed = await this.feedsService.create(createFeedDto.toEntity());
 
     return new SingleResponseDto('Feed', feed.feedId);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Feed 검색 (미완)', description: 'Feed 검색을 위한 API 입니다.' })
-  @ApiOkResponse({ description: '요청 성공', type: ResponsePageDto<SimpleResponseFeedDto> })
-  findAll(
-    @Query('query') query: string,
-    @Query('sort') sort: 'ASC' | 'DESC',
-    @Query('limit') limit: number,
-    @Query('offset') offset: number) {
-    const data = [];
-    for (let index = 0; index < limit; index++) {
-      const feed = new Feed();
-      feed.feedId = index + 1;
-      feed.capturedAt = new Date();
-      feed.floweringStatus = Math.floor(Math.random() * 5) + 1;
-      const image = new Image()
-      image.originUrl = 'https://item.kakaocdn.net/do/71b0683bd1963c4e24c8ba605e23bac9617ea012db208c18f6e83b1a90a7baa7';
-      image.thumbUrl = 'https://item.kakaocdn.net/do/ffd6fd4ddd308f7b129cf04c5ca71ada617ea012db208c18f6e83b1a90a7baa7';
-      feed.addImage(image);
+  // API 문서화 데코레이터
+  @ApiOperation({
+    summary: 'Feed 다건 조회 (locationId)',
+    description: `
+    locationId로 Feed들을 조회하기 위한 API 입니다.
+    각 정렬방법(heart, feedId)에 따라 내림차순 정렬하여 조회합니다.
+    이미지와 꽃은 각 Feed의 대표 이미지와 꽃을 가져옵니다.
+  ` })
+  @ApiOkResponse({
+    description: '요청 성공',
+    content: { 'application/json': { example: { total: 3321, offset: 0, limit: 10, data: ['SimpleResponseFeedDto ...(스키마 하단참조)'] } } }
+  })
+  // API
+  @Get('locations/:locationId')
+  async getFeedsByLocationId(
+    @Param('locationId') locationId: number,
+    @Query() queries: RequestQueriesFeedDto): Promise<ResponsePageDto<SimpleResponseFeedDto>> {
 
-      data[index] = new SimpleResponseFeedDto(feed);
-    }
-    return new ResponsePageDto<SimpleResponseFeedDto>(1000, offset, limit, data);
-    // return this.feedsService.findAll();
+    const { orderBy, limit, offset } = queries;
+    const [feeds, total] = await this.feedsService.findAllByLocationId(locationId, orderBy, limit, offset);
+    const data = feeds.map(feed => new SimpleResponseFeedDto(feed));
+
+    return new ResponsePageDto<SimpleResponseFeedDto>(total, offset, limit, data);
   }
 
-  @Get(':feedId')
-  @ApiOperation({ summary: 'Feed 단건 조회 (미완)', description: '특정 Feed의 상세정보를 조회합니다.' })
+  // API 문서
+  @ApiOperation({ summary: 'Feed 단건 조회', description: '특정 Feed의 상세정보를 조회합니다.' })
   @ApiOkResponse({ description: '요청 성공', type: ResponseFeedDto })
-  @ApiNotFoundResponse({ description: '요청하신 Feed가 존재하지 않습니다.' })
-  findOne(@Param('feedId') feedId: number) {
+  @ApiNotFoundResponse({ description: `요청하신 Feed가 존재하지 않습니다. [errorCode=${CustomErrorCode.FEED_NOT_FOUND}]` })
 
-    const feed = new Feed();
-    feed.feedId = feedId;
-    feed.content = '반가워요 피드 더미에요!';
-    feed.capturedAt = new Date();
-    feed.floweringStatus = Math.floor(Math.random() * 5) + 1;
-    const image = new Image()
-    image.imageId = 1;
-    image.idx = 1;
-    image.originUrl = 'https://item.kakaocdn.net/do/71b0683bd1963c4e24c8ba605e23bac9617ea012db208c18f6e83b1a90a7baa7';
-    image.thumbUrl = 'https://item.kakaocdn.net/do/ffd6fd4ddd308f7b129cf04c5ca71ada617ea012db208c18f6e83b1a90a7baa7';
-    feed.addImage(image);
-    feed.addImage(image);
-    feed.addImage(image);
-    feed.addImage(image);
-
-    return new ResponseFeedDto(feed);
-    // return this.feedsService.findOne(feedId);
+  @Get(':feedId')
+  async findOne(@Param('feedId', ParseIntPipe) feedId: number): Promise<ResponseFeedDto> {
+    return new ResponseFeedDto(await this.feedsService.findOne(feedId));
   }
 
   @Patch(':feedId')
@@ -101,16 +99,18 @@ export class FeedsController {
     // return this.feedsService.update(feedId, updateFeedDto);
   }
 
+  // API 문서화
+  @ApiOperation({ summary: 'Feed 삭제', description: '특정 Feed를 삭제합니다.' })
+  @ApiBody({ type: PasswordDto })
+  @ApiNoContentResponse({ description: '요청 성공' })
+  @ApiNotFoundResponse({ description: `요청하신 Feed가 존재하지 않습니다. [errorCode=${CustomErrorCode.FEED_NOT_FOUND}]` })
+  @ApiUnauthorizedResponse({ description: `잘못된 비밀번호 [errorCode=${CustomErrorCode.FEED_UNAUTHORIZED}]` })
+
   @Delete(':feedId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Feed 삭제 (미완)', description: '특정 Feed를 삭제합니다.<br>password : 비밀번호 확인을 위해 필수' })
-  @ApiBody({ schema: { type: 'object', properties: { password: { type: 'string' } } } })
-  @ApiNoContentResponse({ description: '요청 성공' })
-  @ApiNotFoundResponse({ description: '요청하신 Feed가 존재하지 않습니다.' })
-  @ApiUnauthorizedResponse({ description: '잘못된 비밀번호' })
-  remove(@Param('feedId') feedId: number,
-    @Body('password') password: string) {
+  async remove(@Param('feedId', ParseIntPipe) feedId: number,
+    @Body() passwordDto: PasswordDto): Promise<void> {
+    await this.feedsService.remove(feedId, passwordDto.password);
     return;
-    // return this.feedsService.remove(+feedId);
   }
 }

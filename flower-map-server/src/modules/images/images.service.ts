@@ -1,26 +1,31 @@
-import { Injectable } from '@nestjs/common';
-import { CreateImageDto } from './dto/create-image.dto';
-import { UpdateImageDto } from './dto/update-image.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Image } from './entities/image.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { IsNull, Repository } from 'typeorm';
+import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 
 @Injectable()
 export class ImagesService {
-  create(createImageDto: CreateImageDto) {
-    return 'This action adds a new image';
+  constructor(
+    @InjectRepository(Image)
+    private imagesRepository: Repository<Image>,
+  ) { }
+
+  async create(image: Image): Promise<Image> {
+    return await this.imagesRepository.create(image).save();
   }
 
-  findAll() {
-    return `This action returns all images`;
+  async isUsableImage(imageId: number) {
+    // 사용중이지 않는(feed==null) 이미지를 찾는다
+    if (!await this.imagesRepository.existsBy({ imageId, feed: IsNull() })) {
+      throw new NotFoundException(CustomErrorCode.IMAGE_NOT_FOUND);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} image`;
+  async isUsableImages(imageIds: number[]) {
+    for (let i = 0; i < imageIds.length; i++) {
+      await this.isUsableImage(imageIds[i]);
+    }
   }
 
-  update(id: number, updateImageDto: UpdateImageDto) {
-    return `This action updates a #${id} image`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} image`;
-  }
 }

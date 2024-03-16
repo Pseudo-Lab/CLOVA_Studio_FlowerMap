@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Feed } from "../entities/feed.entity";
 import { ResponseImageDto } from "src/modules/images/dto/response-image.dto";
+import { ResponseLocationDto } from "src/modules/locations/dto/response-location.dto";
 
 export class ResponseFeedDto {
 
@@ -16,22 +17,23 @@ export class ResponseFeedDto {
     @ApiProperty()
     heartsCount: number;
 
-    @ApiProperty({ description: '개화상태 레벨입니다. 1 ~ 5단계 별로 나타냅니다.' })
-    floweringStatus: number;
-
     @ApiProperty({ description: '사진과 관련된 내용, 관련 내용 개발중입니다.', type: [ResponseImageDto] })
-    responseImageDtos: ResponseImageDto[];
+    images: ResponseImageDto[];
 
     @ApiProperty()
-    responseLocationDto: Object;
+    location: ResponseLocationDto;
 
     constructor(feed: Feed) {
         this.feedId = feed.feedId;
         this.content = feed.content;
         this.capturedAt = feed.capturedAt;
-        this.heartsCount = 10;
-        this.floweringStatus = feed.floweringStatus;
-        this.responseImageDtos = feed.images;
-        this.responseLocationDto = { location: '위치관련정보' };
+        this.heartsCount = feed.hearts
+            ? feed.hearts.length
+            : 0;
+        this.images = [];
+        for (let i = 0; i < feed.images.length; i++) {
+            this.images.push(new ResponseImageDto(feed.images[i]));
+        }
+        this.location = new ResponseLocationDto(feed.location);
     }
 }
