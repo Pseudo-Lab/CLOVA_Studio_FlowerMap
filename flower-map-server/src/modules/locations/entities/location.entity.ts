@@ -20,12 +20,14 @@ export class Location extends Auditable {
 
     // @Index({ spatial: true })
     @Column({
-        type: 'point', transformer: {
+        type: 'point',
+        srid: 4326, // EPSG 코드 4326 (WGS84 STANDARD 좌표 시스템, GPS)
+        transformer: {
             from: (value: string) => value.substring(6, value.length - 1).split(' ').map(parseFloat),
             to: (value: number[]) => `POINT(${value[0]} ${value[1]})`
         }
     })
-    coordinates: number[]; // 위도, 경도
+    coordinates: number[]; // 경도, 위도
 
     @ManyToMany(() => Flower)
     @JoinTable({

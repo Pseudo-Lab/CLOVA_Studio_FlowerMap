@@ -24,8 +24,8 @@ export class CreateLocationDto {
 
     @ApiProperty({
         type: Number,
-        description: '[위도, 경도]',
-        example: [37.2422, 131.8676],
+        description: '[경도, 위도]',
+        example: [131.8676, 37.2422],
         isArray: true,
         required: true,
     })
