@@ -66,7 +66,15 @@ export class FeedsService {
    */
   // TODO Heart 관련
   async findOne(feedId: number): Promise<Feed> {
-    const feed = await this.feedsRepository.findOne({ where: { feedId }, relations: ['images', 'images.flower', 'location', 'hearts'] });
+    const feed = await this.feedsRepository.findOne({
+      where: { feedId },
+      relations: {
+        location: true,
+        hearts: true,
+        images: { flower: true },
+      }
+      // relations: ['images', 'images.flower', 'location', 'hearts']
+    });
     if (!feed) throw new NotFoundException(CustomErrorCode.FEED_NOT_FOUND);
     else return feed;
   }
