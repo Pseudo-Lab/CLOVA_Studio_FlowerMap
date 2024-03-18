@@ -1,17 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { LocationsService } from './locations.service';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { ResponseLocationDto } from './dto/response-location.dto';
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SingleResponseDto } from 'src/common/single-response.dto';
-import { ResponsePageDto } from 'src/common/response-page.dto';
-import { Location } from './entities/location.entity';
-import { Flower } from '../flowers/entities/flower.entity';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 import { FlowersService } from '../flowers/flowers.service';
+import { RequestNearbyQueriesDto } from './dto/request-nearby-queries.dto';
+import { ResponsePageDto } from 'src/common/response-page.dto';
 
 @ApiTags('Location(위치정보) API')
-@ApiBadRequestResponse({ description: '잘못된 요청 형식입니다. (body, query, param 등)' })
+@ApiBadRequestResponse({ description: `잘못된 요청 형식입니다. (body, query, param 등)[errorCode=${CustomErrorCode.VALIDATION_BAD_REQUEST}]` })
 @Controller('api/v1/locations')
 export class LocationsController {
   constructor(
@@ -34,32 +33,21 @@ export class LocationsController {
     return new SingleResponseDto('Location', location.locationId);
   }
 
-  @Get()
-  @ApiOperation({ summary: '특정 좌표 중심으로 Location 검색 (미완)', description: '' })
-  @ApiOkResponse({ description: '요청 성공', type: ResponsePageDto<ResponseLocationDto> })
-  findAll(
-    @Query('latitude') latitude: number,
-    @Query('longitude') longitude: number,
-    @Query('range') range: number,
-    @Query('limit') limit: number,
-    @Query('offset') offset: number) {
+  @ApiOperation({
+    summary: '특정 좌표 중심 반경 x미터 이내의 Location 검색',
+    description: '특정 좌표(경도, 위도) 기준으로 반경 x미터 이내의 Location들을 모두 검색합니다.'
+  })
+  @ApiOkResponse({
+    description: '요청 성공',
+    content: { 'application/json': { example: { total: 10, data: ['ResponseLocationDto ...(스키마 하단참조)'] } } }
+  })
+  @Get('nearby')
+  async getNearbyLocations(@Query() quires: RequestNearbyQueriesDto): Promise<ResponsePageDto<ResponseLocationDto>> {
 
-    const data: ResponseLocationDto[] = []
-    const flower = new Flower()
-    flower.flowerId = 1;
-    flower.name = '벚꽃'
-    for (let i = 1; i <= limit; i++) {
-      const location = new Location()
-      location.locationId = i;
-      location.numberAddress = '지번주소' + i
-      location.roadAddress = '도로명주소' + i
-      location.coordinates = [latitude + i / 1000, longitude + i / 1000]
-      location.flowers.push(flower);
-      data[i - 1] = new ResponseLocationDto(location)
-    }
+    const [locations, total] = await this.locationsService.findAllByCoordinates(quires);
+    const data = locations.map(location => new ResponseLocationDto(location));
 
-
-    return new ResponsePageDto<ResponseLocationDto>(100, offset, limit, data);
+    return new ResponsePageDto(total, null, null, data);
   }
 
   // API 문서
@@ -73,13 +61,4 @@ export class LocationsController {
     return new ResponseLocationDto(location);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateLocationDto: UpdateLocationDto) {
-  //   return this.locationsService.update(+id, updateLocationDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.locationsService.remove(+id);
-  // }
 }
