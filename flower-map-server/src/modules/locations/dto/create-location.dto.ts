@@ -1,5 +1,5 @@
 import { Location } from "../entities/location.entity";
-import { ArrayMaxSize, ArrayMinSize, IsNumber, IsString, Length, Matches, Min, MinLength } from "class-validator";
+import { ArrayMinSize, IsString, Length, Matches, Max, Min, NotEquals } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateLocationDto {
@@ -24,15 +24,27 @@ export class CreateLocationDto {
 
     @ApiProperty({
         type: Number,
-        description: '[경도, 위도]',
-        example: [131.8676, 37.2422],
-        isArray: true,
-        required: true,
+        description: '-180 < 경도 <= 180',
+        minimum: -180,
+        exclusiveMinimum: true,
+        maximum: 180,
+        example: 131.8676
     })
-    @ArrayMinSize(2)
-    @ArrayMaxSize(2)
-    @IsNumber({}, { each: true })
-    coordinates: number[];
+    @Min(-180)
+    @NotEquals(-180)
+    @Max(180)
+    longitude: number; // 경도
+
+    @ApiProperty({
+        type: Number,
+        description: '-90 <= 위도 <= 90',
+        minimum: -90,
+        maximum: 90,
+        example: 37.2422
+    })
+    @Min(-90)
+    @Max(90)
+    latitude: number; // 위도
 
     @ApiProperty({
         type: Number,
@@ -48,7 +60,7 @@ export class CreateLocationDto {
         location.name = this.name;
         location.numberAddress = this.numberAddress;
         location.roadAddress = this.roadAddress;
-        location.coordinates = this.coordinates;
+        location.coordinates = [this.longitude, this.latitude];
         this.flowerIds.forEach(flowerId => location.addFlower(flowerId));
         return location;
     }
