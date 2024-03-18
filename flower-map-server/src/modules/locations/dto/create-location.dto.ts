@@ -1,5 +1,5 @@
 import { Location } from "../entities/location.entity";
-import { ArrayMinSize, IsString, Length, Matches, Max, Min, NotEquals } from "class-validator";
+import { ArrayMinSize, ArrayUnique, IsString, Length, Matches, Max, Min, NotEquals } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateLocationDto {
@@ -52,6 +52,7 @@ export class CreateLocationDto {
         example: [1, 2]
     })
     @ArrayMinSize(1)
+    @ArrayUnique()
     @Min(1, { each: true })
     flowerIds: number[];
 
