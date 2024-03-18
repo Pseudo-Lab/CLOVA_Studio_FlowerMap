@@ -16,7 +16,7 @@ export class ResponseLocationDto {
     @ApiProperty()
     roadAddress: string;
 
-    @ApiProperty({ type: [Number, Number], example: [37.2422, 131.8676] })
+    @ApiProperty({ description: '[경도, 위도]', type: [Number, Number], example: [131.8676, 37.2422] })
     coordinates: number[];
 
     @ApiProperty({
