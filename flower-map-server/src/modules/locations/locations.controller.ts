@@ -42,9 +42,9 @@ export class LocationsController {
     content: { 'application/json': { example: { total: 10, data: ['ResponseLocationDto ...(스키마 하단참조)'] } } }
   })
   @Get('nearby')
-  async getNearbyLocations(@Query() quires: RequestNearbyQueriesDto): Promise<ResponsePageDto<ResponseLocationDto>> {
+  async getNearbyLocations(@Query() queries: RequestNearbyQueriesDto): Promise<ResponsePageDto<ResponseLocationDto>> {
 
-    const [locations, total] = await this.locationsService.findAllByCoordinates(quires);
+    const [locations, total] = await this.locationsService.findAllByCoordinates(queries);
     const data = locations.map(location => new ResponseLocationDto(location));
 
     return new ResponsePageDto(total, null, null, data);
