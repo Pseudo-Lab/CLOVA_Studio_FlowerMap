@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
-import { ArrayUnique, IsArray, IsNumber, IsOptional, IsString, Max, Min, NotEquals } from "class-validator";
+import { ArrayUnique, IsArray, IsNumber, IsOptional, Max, Min, NotEquals } from "class-validator";
 
 export class RequestNearbyQueriesDto {
 
