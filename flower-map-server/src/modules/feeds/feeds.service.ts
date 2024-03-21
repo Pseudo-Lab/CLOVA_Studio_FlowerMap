@@ -3,7 +3,7 @@ import { UpdateFeedDto } from './dto/update-feed.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Feed } from './entities/feed.entity';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 
 @Injectable()
@@ -32,11 +32,12 @@ export class FeedsService {
     // 베이스 쿼리
     const baseQuery = this.feedsRepository
       .createQueryBuilder('feed')
-      .leftJoinAndSelect('feed.images', 'image', 'image.idx = :idx', { idx: 0 })
+      // .leftJoinAndSelect('feed.images', 'image', 'image.idx = :idx', { idx: 0 })
       .leftJoin('feed.hearts', 'heart')
       .addSelect('COUNT(heart.heart_id)', 'heartCount') // hearts의 수를 선택하고 heartCount라는 별칭을 부여합니다.
       .where('feed.location.locationId = :locationId', { locationId })
       .groupBy('feed.feed_id')
+      // .addGroupBy('image.feed_id')
       .take(limit)
       .skip(offset);
 
