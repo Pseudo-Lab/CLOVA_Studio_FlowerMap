@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { UpdateLocationDto } from './dto/update-location.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Location } from './entities/location.entity';
 import { Repository } from 'typeorm';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 import { RequestNearbyQueriesDto } from './dto/request-nearby-queries.dto';
+import { SearchQueriesDto } from './dto/search-queries.dto';
 
 @Injectable()
 export class LocationsService {
@@ -54,11 +54,38 @@ export class LocationsService {
     else throw new NotFoundException(CustomErrorCode.LOCATION_NOT_FOUND);
   }
 
-  update(id: number, updateLocationDto: UpdateLocationDto) {
-    return `This action updates a #${id} location`;
-  }
+  // TODO 검색어 연관도 순으로 최적화해야함
+  /**
+   * Location의 name, roadAddress, numberAddress에서 주어진 query로 검색
+   * 게시글 많은 순으로 정렬
+   */
+  async findAllByNameAndAddress(searchQueriesDto: SearchQueriesDto)
+    : Promise<{ locations: Location[], total: number }> {
+    const { query, limit, offset } = searchQueriesDto;
 
-  remove(id: number) {
-    return `This action removes a #${id} location`;
+    // 베이스 쿼리
+    const baseQuery = this.locationsRepository
+      .createQueryBuilder('location')
+      .leftJoin('location.feeds', 'feed')
+      .addSelect('COUNT(feed.feed_id)', 'feedsCount')
+      .groupBy('location.location_id')
+      .orderBy('feedsCount', 'DESC')
+      .addOrderBy('location.locationId', 'DESC')
+      .take(limit)
+      .skip(offset)
+
+    // where절 세팅
+    if (query) {
+      baseQuery
+        .where('location.name LIKE :query')
+        .orWhere('location.number_address LIKE :query')
+        .orWhere('location.road_address LIKE :query')
+        .setParameters({ query: `%${query}%` })
+    }
+
+    // 데이터 요청 및 반환
+    const [locations, total] = await baseQuery.getManyAndCount();
+    // const total: number = await baseQuery.getCount();
+    return { locations, total };
   }
 }
