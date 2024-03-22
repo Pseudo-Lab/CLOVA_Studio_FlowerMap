@@ -9,9 +9,6 @@ export class Image extends Auditable {
     @PrimaryGeneratedColumn({ name: 'image_id' })
     imageId: number;
 
-    @Column({ name: 'user_ip' })
-    userIp: string;
-
     @Column({ name: 'origin_url' })
     originUrl: string;
 

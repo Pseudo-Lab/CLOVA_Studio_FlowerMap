@@ -10,9 +10,9 @@ import { SimpleResponseFeedDto } from './dto/simple-response-feed.dto';
 import { SingleResponseDto } from 'src/common/single-response.dto';
 import { LocationsService } from '../locations/locations.service';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
-import { ImagesService } from '../images/images.service';
 import { PasswordDto } from './dto/password.dto';
 import { RequestQueriesFeedDto } from './dto/request-queries-feed.dto';
+import { FlowersService } from '../flowers/flowers.service';
 
 // API 문서
 @ApiTags('Feed(게시글) API')
@@ -23,7 +23,7 @@ export class FeedsController {
   constructor(
     private readonly feedsService: FeedsService,
     private readonly locationsService: LocationsService,
-    private readonly imagesService: ImagesService,
+    private readonly flowersService: FlowersService
   ) { }
 
   // API 문서
@@ -34,8 +34,7 @@ export class FeedsController {
   ` })
   @ApiBody({ type: CreateFeedDto })
   @ApiCreatedResponse({ description: '요청 성공', type: SingleResponseDto })
-  @ApiNotFoundResponse({ description: `Image, Location이 존재하지 않습니다. [errorCode=${CustomErrorCode.IMAGE_NOT_FOUND} or ${CustomErrorCode.LOCATION_NOT_FOUND}]` })
-
+  @ApiNotFoundResponse({ description: `Flower, Location이 존재하지 않습니다. [errorCode=${CustomErrorCode.FLOWER_NOT_FOUND} or ${CustomErrorCode.LOCATION_NOT_FOUND}]` })
   @Post()
   async create(
     @Body() createFeedDto: CreateFeedDto,
@@ -43,8 +42,10 @@ export class FeedsController {
 
     // Location 존재 여부 확인
     await this.locationsService.existsById(createFeedDto.locationId);
-    // Image 존재 여부 및 사용 가능 여부 확인
-    await this.imagesService.isUsableImages(createFeedDto.imageIds);
+    // Flower 존재 여부 확인
+    for (let i = 0; i < createFeedDto.images.length; i++) {
+      await this.flowersService.exists(createFeedDto.images[i].flowerId);
+    }
     // IP주소 설정
     createFeedDto.userIp = userIp;
     // Feed 생성
