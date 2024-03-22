@@ -1,8 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsDateString, IsNotEmpty, IsNumber, IsString, Length, Matches, Min } from "class-validator";
+import { ArrayMaxSize, ArrayMinSize, IsDateString, IsNotEmpty, IsString, Length, Matches, Min, ValidateNested } from "class-validator";
 import { Feed } from "../entities/feed.entity";
 import { Location } from "src/modules/locations/entities/location.entity";
-import { Image } from "src/modules/images/entities/image.entity";
+import { CreateImageDto } from "src/modules/images/dto/create-image.dto";
+import { Type } from "class-transformer";
 
 export class CreateFeedDto {
 
@@ -45,16 +46,16 @@ export class CreateFeedDto {
     locationId: number;
 
     @ApiProperty({
-        type: [Number],
-        description: 'Image Id를 배열 형태로 입력, 배열에 입력된 순서대로 index가 결정됨 [배열크기 1이상 3이하, 배열 원소 중복 금지]',
-        example: [1, 2, 3],
+        type: CreateImageDto,
+        description: 'Image 정보 배열',
         required: true,
+        isArray: true
     })
-    @ArrayMinSize(1) // 최소 배열 크기
-    @ArrayMaxSize(3) // 최대 배열 크기
-    @ArrayUnique() // 입력된 배열 중복 금지
-    @IsNumber({ allowInfinity: false, allowNaN: false }, { each: true }) // 숫자 여부 체크
-    imageIds: number[];
+    @Type(() => CreateImageDto)
+    @ArrayMinSize(1)
+    @ArrayMaxSize(3)
+    @ValidateNested({ each: true })
+    images: CreateImageDto[];
 
     userIp: string; // controller에서 입력할 것
 
@@ -66,12 +67,8 @@ export class CreateFeedDto {
         feed.password = this.password;
         feed.capturedAt = this.capturedAt;
         // Image 추가
-        for (let i = 0; i < this.imageIds.length; i++) {
-            const image = new Image();
-            image.imageId = this.imageIds[i]; // 이미지 id 설정
-            image.idx = i; // 이미지 idx(인덱스) 설정
-            feed.addImage(image);
-        }
+        this.images.map((createImageDto, idx) => feed.addImage(createImageDto.toEntity(idx)));
+
         // Location 추가
         const location = new Location();
         location.locationId = this.locationId;
