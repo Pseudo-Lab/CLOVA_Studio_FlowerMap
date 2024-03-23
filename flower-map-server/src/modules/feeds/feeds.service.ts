@@ -32,30 +32,29 @@ export class FeedsService {
     // 베이스 쿼리
     const baseQuery = this.feedsRepository
       .createQueryBuilder('feed')
-      // .leftJoinAndSelect('feed.images', 'image', 'image.idx = :idx', { idx: 0 })
       .leftJoin('feed.hearts', 'heart')
       .addSelect('COUNT(heart.heart_id)', 'heartCount') // hearts의 수를 선택하고 heartCount라는 별칭을 부여합니다.
+      .leftJoinAndSelect('feed.images', 'image', 'image.idx = 0') // 첫번째 사진만 가져와야 매핑할때 불일치 문제 없음
       .where('feed.location.locationId = :locationId', { locationId })
       .groupBy('feed.feed_id')
-      // .addGroupBy('image.feed_id')
+      .addGroupBy('image.image_id')
       .take(limit)
       .skip(offset);
 
     // 쿼리에 맞는 갯수
     const total = await baseQuery.getCount();
 
-    let query;
     // 최신순 정렬
     if (orderBy === 'feedId') {
-      query = baseQuery.orderBy('feed.feedId', 'DESC');
+      baseQuery.orderBy('feed.feedId', 'DESC');
     } else {
       // heart 많은 순 정렬
-      query = baseQuery
+      baseQuery
         .orderBy('heartCount', 'DESC')
         .addOrderBy('feed.feedId', 'DESC');
     }
 
-    const { raw, entities } = await query.getRawAndEntities();
+    const { raw, entities } = await baseQuery.getRawAndEntities();
     entities.map((feed, index) => feed.heartCount = parseInt(raw[index].heartCount))
 
     return [entities, total];
