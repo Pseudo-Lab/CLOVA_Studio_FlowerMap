@@ -12,7 +12,7 @@
 
 ### 전국 지역별
 * 개화기 영향 : 기온 & 광주기 (낮의 길이)<br>
-  * 일조량으로 비교하는게 더 좋으나, 일부 지역의 일조량 결측
+  * 일조량으로 비교하는게 더 좋으나, 일부 지역의 일조량 결측<br>
   ![image](https://github.com/Pseudo-Lab/CLOVA_Studio_FlowerMap/assets/146702973/1666d4fc-02ff-4506-a0df-68b00ab24405)
 * 추가 자료 : [기상자료개방포털 종관기상관측(ASOS)]([https://data.kma.go.kr/data/grnd/selectAsosRltmList.do?pgmNo=36)
 * 2020 ~ 2024년 2,3월 주요지역 평균 일조시간과 최저기온, 최고기온, 일교차
