@@ -1,3 +1,7 @@
+* 이용 Library : `pygwalker`
+
+-----
+
 ### 서울 기온 비교 (서울 지역별 2020년 2,3월 vs 2024년 2,3월)
 #### 최고 기온
 * 지역별 최고기온은 평이한 형태
@@ -38,7 +42,4 @@
 ### 개화 예상일정표
 <img width="1385" alt="image" src="https://github.com/Pseudo-Lab/CLOVA_Studio_FlowerMap/assets/146702973/aae9f06c-04f7-4f5e-918d-a62055bbeffa">
 
-
------
-이용 Lib : `pyg`
 
