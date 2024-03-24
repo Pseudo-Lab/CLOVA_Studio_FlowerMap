@@ -6,6 +6,7 @@
 #### 최저 기온
 * 최고 기온과 달리 최저 기온은 지역별 차이가 큰 편
 * '노원', '은평' 이 가장 낮은 기온
+  
 ![image](https://github.com/Pseudo-Lab/CLOVA_Studio_FlowerMap/assets/146702973/173135ae-1470-48a0-a75a-729e0ea553bb)
 ![image](https://github.com/Pseudo-Lab/CLOVA_Studio_FlowerMap/assets/146702973/61c8f851-d2d1-4632-b04c-9682d8cd952e)
 
