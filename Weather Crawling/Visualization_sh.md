@@ -9,6 +9,10 @@
 ![image](https://github.com/Pseudo-Lab/CLOVA_Studio_FlowerMap/assets/146702973/173135ae-1470-48a0-a75a-729e0ea553bb)
 ![image](https://github.com/Pseudo-Lab/CLOVA_Studio_FlowerMap/assets/146702973/61c8f851-d2d1-4632-b04c-9682d8cd952e)
 
+#### 연도별 비교
+![image](https://github.com/Pseudo-Lab/CLOVA_Studio_FlowerMap/assets/146702973/c73222cc-9ba1-4e83-88db-842bcf0af4aa)
+
+
 ### 전국 지역별
 * 개화기 영향 : 기온 & 광주기 (낮의 길이)<br>
   * 일조량으로 비교하는게 더 좋으나, 일부 지역의 일조량 결측<br>
