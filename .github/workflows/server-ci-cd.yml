@@ -21,7 +21,7 @@ jobs:
     - name: docker hub login
       uses: docker/login-action@v2
       with:
-        username: ${{ secrets.DOCKERHUB_EMAIL }}
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
         
     # 3. 도커 허브에 빌드한 이미지 푸쉬
