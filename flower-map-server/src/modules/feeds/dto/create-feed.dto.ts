@@ -27,11 +27,12 @@ export class CreateFeedDto {
     @IsString()
     @Length(6, 6)
     @Matches(/^[0-9a-zA-Z]{6}$/)
-    password: string;
+    password: string; // UpdateFeedDto.currentPassword 수정 함께 할것.
 
     @ApiProperty({
         type: Date,
-        description: '촬영한 연도,월,일,시간 입니다.',
+        description: '촬영한 연도,월,일,시간입니다.(ISO8601에 맞춰 입력해주세요)',
+        example: "2024-03-25T09:00:00Z",
         required: true
     })
     @IsDateString()
