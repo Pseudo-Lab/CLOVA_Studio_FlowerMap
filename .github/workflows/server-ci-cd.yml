@@ -1,8 +1,8 @@
 name: Docker Image CI/CD
 
-# on:
-  # push:
-    # branches: [ "main" ]
+on:
+  push:
+    branches: [ "main" ]
   # pull_request:
     # branches: [ "main" ]
 
@@ -15,7 +15,7 @@ jobs:
     
     # 1. 도커 이미지 빌드
     - name: Build the Docker image
-      run: docker build --platform linux/amd64 ./flower-map-server -t ${{ secrets.DOCKERHUB_USERNAME }}/flower-map-server-app
+      run: docker build --platform linux/amd64 ./flower-map-server -t ${{ secrets.DOCKERHUB_USERNAME }}/try
       
     # 2. 도커 허브 로그인
     - name: docker hub login
@@ -26,43 +26,43 @@ jobs:
         
     # 3. 도커 허브에 빌드한 이미지 푸쉬
     - name: docker hub push
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/flower-map-server-app
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/try
 
   # 위 과정에서 생성한 도커 이미지를 서버에서 실행
-  run-docker-image-on-server:
-    needs: build-server-docker-image
-    runs-on: self-hosted
+  # run-docker-image-on-server:
+  #   needs: build-server-docker-image
+  #   runs-on: self-hosted
 
-    steps:
-      # 최신 이미지를 풀받습니다
-      - name: docker pull
-        run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/flower-map-server-app
+  #   steps:
+  #     # 최신 이미지를 풀받습니다
+  #     - name: docker pull
+  #       run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/try
 
-      # 기존 컨테이너를 중지시킵니다
-      - name: docker stop container
-        run: sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
+  #     # 기존 컨테이너를 중지시킵니다
+  #     - name: docker stop container
+  #       run: sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
 
-      # 최신 이미지를 컨테이너화하여 실행시킵니다
-      - name: docker run new container
-        # run: sudo docker run --name flower-map-server --rm -d 
-        run: sudo docker run --rm -d
-          -e SERVER_PORT=${{ secrets.SERVER_PORT }}
-          -e DB_TYPE=${{ secrets.DB_TYPE }}
-          -e DB_HOST=${{ secrets.DB_HOST }}
-          -e DB_PORT=${{ secrets.DB_PORT }}
-          -e DB_USERNAME=${{ secrets.DB_USERNAME }}
-          -e DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          -e DB_DATABASE=${{ secrets.DB_DATABASE }}
-          -e DB_SYNCHRONIZE=${{ secrets.DB_SYNCHRONIZE }}
-          -e DB_LOGGING=${{ secrets.DB_LOGGING }}
-          -e NCLOUD_STORAGE_ENDPOINT=${{ secrets.NCLOUD_STORAGE_ENDPOINT }}
-          -e NCLOUD_STORAGE_REGION=${{ secrets.NCLOUD_STORAGE_REGION }}
-          -e NCLOUD_STORAGE_ACCESS_KEY_ID=${{ secrets.NCLOUD_STORAGE_ACCESS_KEY_ID }}
-          -e NCLOUD_STORAGE_SECRET_KEY=${{ secrets.NCLOUD_STORAGE_SECRET_KEY }}
-          -e NCLOUD_STORAGE_BUCKET_NAME=${{ secrets.NCLOUD_STORAGE_BUCKET_NAME }}
-          -e NCLOUD_STORAGE_FOLDER_NAME=${{ secrets.NCLOUD_STORAGE_FOLDER_NAME }}
-          -p 3000:3000 ${{ secrets.DOCKERHUB_USERNAME }}/flower-map-server-app
+  #     # 최신 이미지를 컨테이너화하여 실행시킵니다
+  #     - name: docker run new container
+  #       # run: sudo docker run --name flower-map-server --rm -d 
+  #       run: sudo docker run --rm -d
+  #         -e SERVER_PORT=${{ secrets.SERVER_PORT }}
+  #         -e DB_TYPE=${{ secrets.DB_TYPE }}
+  #         -e DB_HOST=${{ secrets.DB_HOST }}
+  #         -e DB_PORT=${{ secrets.DB_PORT }}
+  #         -e DB_USERNAME=${{ secrets.DB_USERNAME }}
+  #         -e DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+  #         -e DB_DATABASE=${{ secrets.DB_DATABASE }}
+  #         -e DB_SYNCHRONIZE=${{ secrets.DB_SYNCHRONIZE }}
+  #         -e DB_LOGGING=${{ secrets.DB_LOGGING }}
+  #         -e NCLOUD_STORAGE_ENDPOINT=${{ secrets.NCLOUD_STORAGE_ENDPOINT }}
+  #         -e NCLOUD_STORAGE_REGION=${{ secrets.NCLOUD_STORAGE_REGION }}
+  #         -e NCLOUD_STORAGE_ACCESS_KEY_ID=${{ secrets.NCLOUD_STORAGE_ACCESS_KEY_ID }}
+  #         -e NCLOUD_STORAGE_SECRET_KEY=${{ secrets.NCLOUD_STORAGE_SECRET_KEY }}
+  #         -e NCLOUD_STORAGE_BUCKET_NAME=${{ secrets.NCLOUD_STORAGE_BUCKET_NAME }}
+  #         -e NCLOUD_STORAGE_FOLDER_NAME=${{ secrets.NCLOUD_STORAGE_FOLDER_NAME }}
+  #         -p 3000:3000 ${{ secrets.DOCKERHUB_USERNAME }}/try
 
-      # 미사용 이미지를 정리합니다
-      - name: delete old docker image
-        run: sudo docker system prune -f
+  #     # 미사용 이미지를 정리합니다
+  #     - name: delete old docker image
+  #       run: sudo docker system prune -f
