@@ -8,6 +8,7 @@ import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 import { FlowersService } from '../flowers/flowers.service';
 import { RequestNearbyQueriesDto } from './dto/request-nearby-queries.dto';
 import { ResponsePageDto } from 'src/common/response-page.dto';
+import { SearchQueriesDto } from './dto/search-queries.dto';
 
 @ApiTags('Location(위치정보) API')
 @ApiBadRequestResponse({ description: `잘못된 요청 형식입니다. (body, query, param 등)[errorCode=${CustomErrorCode.VALIDATION_BAD_REQUEST}]` })
@@ -33,6 +34,24 @@ export class LocationsController {
     return new SingleResponseDto('Location', location.locationId);
   }
 
+  // TODO 검색어로 검색하기
+  @ApiOperation({
+    summary: 'Location 검색',
+    description: '장소명과 주소기반으로 Location 검색'
+  })
+  @ApiOkResponse({
+    description: '요청 성공',
+    content: { 'application/json': { example: { total: 33, offset: 0, limit: 10, data: ['ResponseLocationDto ...(스키마 하단참조)'] } } }
+  })
+  @Get()
+  async getLocations(@Query() queries: SearchQueriesDto) {
+
+    const { locations, total } = await this.locationsService.findAllByNameAndAddress(queries);
+    const data = locations.map(location => new ResponseLocationDto(location));
+
+    return new ResponsePageDto(total, queries.offset, queries.limit, data);
+  }
+
   @ApiOperation({
     summary: '특정 좌표 중심 반경 x미터 이내의 Location 검색',
     description: '특정 좌표(경도, 위도) 기준으로 반경 x미터 이내의 Location들을 모두 검색합니다.'
@@ -42,19 +61,17 @@ export class LocationsController {
     content: { 'application/json': { example: { total: 10, data: ['ResponseLocationDto ...(스키마 하단참조)'] } } }
   })
   @Get('nearby')
-  async getNearbyLocations(@Query() quires: RequestNearbyQueriesDto): Promise<ResponsePageDto<ResponseLocationDto>> {
+  async getNearbyLocations(@Query() queries: RequestNearbyQueriesDto): Promise<ResponsePageDto<ResponseLocationDto>> {
 
-    const [locations, total] = await this.locationsService.findAllByCoordinates(quires);
+    const [locations, total] = await this.locationsService.findAllByCoordinates(queries);
     const data = locations.map(location => new ResponseLocationDto(location));
 
     return new ResponsePageDto(total, null, null, data);
   }
 
-  // API 문서
   @ApiOperation({ summary: 'Location 단건 조회', description: '특정 Location을 id로 조회한다.' })
   @ApiOkResponse({ description: '요청 성공', type: ResponseLocationDto })
   @ApiNotFoundResponse({ description: `Locatioon이 존재하지 않습니다. [errorCode=${CustomErrorCode.LOCATION_NOT_FOUND}]` })
-
   @Get(':locationId')
   async findOne(@Param('locationId', ParseIntPipe) locationId: number): Promise<ResponseLocationDto> {
     const location = await this.locationsService.findOne(locationId);

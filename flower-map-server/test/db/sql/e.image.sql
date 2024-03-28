@@ -1,0 +1,20 @@
+CREATE TABLE `image` (
+  `created_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  `modified_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  `deleted_at` datetime(6) DEFAULT NULL,
+  `image_id` int NOT NULL AUTO_INCREMENT,
+  `user_ip` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `origin_url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `origin_e_tag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `thumb_url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `thumb_e_tag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `idx` int DEFAULT NULL,
+  `flowering_status` int NOT NULL,
+  `feed_id` int DEFAULT NULL,
+  `flower_id` int DEFAULT NULL,
+  PRIMARY KEY (`image_id`),
+  KEY `FK_a418481f495ed52fbddf4c80a6e` (`feed_id`),
+  KEY `FK_46ba9f421c582fcd9d423288760` (`flower_id`),
+  CONSTRAINT `FK_46ba9f421c582fcd9d423288760` FOREIGN KEY (`flower_id`) REFERENCES `flower` (`flower_id`),
+  CONSTRAINT `FK_a418481f495ed52fbddf4c80a6e` FOREIGN KEY (`feed_id`) REFERENCES `feed` (`feed_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
