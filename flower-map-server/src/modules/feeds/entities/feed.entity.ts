@@ -2,6 +2,7 @@ import { Location } from "src/modules/locations/entities/location.entity";
 import { Auditable } from "src/common/auditable.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Image } from "src/modules/images/entities/image.entity";
+import { Heart } from "./heart.entity";
 
 @Entity()
 export class Feed extends Auditable {
@@ -21,15 +22,17 @@ export class Feed extends Auditable {
     @Column({ type: 'datetime', width: 0, name: 'captured_at' })
     capturedAt: Date;
 
-    @Column({ name: 'flowering_status' })
-    floweringStatus: number;
+    @ManyToOne(() => Location, (location) => location.feeds, { nullable: false })
+    @JoinColumn({ name: 'location_id' })
+    location: Location;
 
     @OneToMany(() => Image, (image) => image.feed, { cascade: ['insert', 'update'] })
     images: Image[];
 
-    @ManyToOne(() => Location, (location) => location.feeds, { nullable: false })
-    @JoinColumn({ name: 'location_id' })
-    location: Location;
+    @OneToMany(() => Heart, (heart) => heart.feed, { cascade: ['remove', 'soft-remove'] })
+    hearts: Heart[];
+
+    heartCount: number;
 
     // 이미지 추가 메서드
     addImage(value: number | Image): void {

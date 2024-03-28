@@ -9,9 +9,6 @@ export class Image extends Auditable {
     @PrimaryGeneratedColumn({ name: 'image_id' })
     imageId: number;
 
-    @Column({ name: 'user_ip' })
-    userIp: string;
-
     @Column({ name: 'origin_url' })
     originUrl: string;
 
@@ -24,15 +21,17 @@ export class Image extends Auditable {
     @Column({ name: 'thumb_e_tag' })
     thumbETag: string;
 
-    @Column({ nullable: true })
+    @Column({})
     idx: number;
 
-    @ManyToOne(() => Feed, (feed) => feed.images, { nullable: true })
+    @ManyToOne(() => Feed, (feed) => feed.images, { nullable: false })
     @JoinColumn({ name: 'feed_id' })
     feed: Feed;
 
-    @ManyToOne(() => Flower, (flower) => flower.images, { nullable: true })
+    @ManyToOne(() => Flower, (flower) => flower.images, { nullable: false })
     @JoinColumn({ name: 'flower_id' })
     flower: Flower;
 
+    @Column({ name: 'flowering_status' })
+    floweringStatus: number;
 }

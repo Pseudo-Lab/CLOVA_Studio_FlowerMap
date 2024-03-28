@@ -5,9 +5,13 @@ import { ImagesEditingService } from './images-editing.service';
 import { ImagesUploadService } from './images-upload.service';
 import { Image } from './entities/image.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { FlowersModule } from '../flowers/flowers.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Image])],
+  imports: [
+    TypeOrmModule.forFeature([Image]),
+    FlowersModule
+  ],
   controllers: [ImagesController],
   providers: [ImagesService, ImagesEditingService, ImagesUploadService],
   exports: [ImagesService]

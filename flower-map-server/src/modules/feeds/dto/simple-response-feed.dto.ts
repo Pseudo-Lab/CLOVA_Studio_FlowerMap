@@ -11,27 +11,20 @@ export class SimpleResponseFeedDto {
     capturedAt: Date;
 
     @ApiProperty()
-    floweringStatus: number;
-
-    @ApiProperty()
     heartsCount: number;
 
     @ApiProperty()
-    responseImageDto: ResponseImageDto;
-
-    @ApiProperty()
-    responseLocationDto: Object;
+    image: ResponseImageDto;
 
     constructor(feed: Feed) {
         this.feedId = feed.feedId;
         this.capturedAt = feed.capturedAt;
-        this.floweringStatus = feed.floweringStatus;
-        this.heartsCount = 10;
-        this.responseImageDto = feed.images[0];
-        this.responseLocationDto = {
-            numberAddress: '지번주소',
-            roadAddress: '도로명주소'
-        }
+        this.heartsCount = feed.hearts
+            ? feed.hearts.length
+            : feed.heartCount;
+        this.image = feed.images && feed.images.length > 0
+            ? new ResponseImageDto(feed.images[0])
+            : null;
     }
 
 }
