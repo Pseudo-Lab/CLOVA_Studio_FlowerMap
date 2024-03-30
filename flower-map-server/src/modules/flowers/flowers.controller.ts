@@ -9,7 +9,6 @@ export class FlowersController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.flowersService.remove(+id);
   }
 
 }
