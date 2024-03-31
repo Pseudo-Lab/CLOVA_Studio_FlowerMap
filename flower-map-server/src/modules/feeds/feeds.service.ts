@@ -3,7 +3,7 @@ import { UpdateFeedDto } from './dto/update-feed.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Feed } from './entities/feed.entity';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
+import { genSalt, hash, compare } from 'bcryptjs';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 
 @Injectable()
@@ -14,12 +14,12 @@ export class FeedsService {
   ) { }
 
   private async hashPassword(password: string): Promise<string> {
-    const salt = await bcrypt.genSalt();
-    return await bcrypt.hash(password, salt);
+    const salt = await genSalt();
+    return await hash(password, salt);
   }
 
   private async verifyPassword(inputPassword: string, dbPassword: string): Promise<void> {
-    const result = await bcrypt.compare(inputPassword, dbPassword);
+    const result = await compare(inputPassword, dbPassword);
     if (!result) throw new UnauthorizedException(CustomErrorCode.FEED_UNAUTHORIZED);
   }
 
