@@ -3,7 +3,7 @@ import { UpdateFeedDto } from './dto/update-feed.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Feed } from './entities/feed.entity';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
+import { genSalt, hash, compare } from 'bcryptjs';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 
 @Injectable()
@@ -14,12 +14,12 @@ export class FeedsService {
   ) { }
 
   private async hashPassword(password: string): Promise<string> {
-    const salt = await bcrypt.genSalt();
-    return await bcrypt.hash(password, salt);
+    const salt = await genSalt();
+    return await hash(password, salt);
   }
 
   private async verifyPassword(inputPassword: string, dbPassword: string): Promise<void> {
-    const result = await bcrypt.compare(inputPassword, dbPassword);
+    const result = await compare(inputPassword, dbPassword);
     if (!result) throw new UnauthorizedException(CustomErrorCode.FEED_UNAUTHORIZED);
   }
 
@@ -79,8 +79,20 @@ export class FeedsService {
     else return feed;
   }
 
-  update(id: number, updateFeedDto: UpdateFeedDto) {
-    return `This action updates a #${id} feed`;
+  async update(feedId: number, updateFeedDto: UpdateFeedDto) {
+    const feed = await this.feedsRepository.findOne({
+      where: { feedId },
+      relations: {
+        // location: true
+      }
+    });
+
+    await this.verifyPassword(updateFeedDto.currentPassword, feed.password);
+
+    feed.content = updateFeedDto.content;
+    // if (updateFeedDto.password) feed.password = await this.hashPassword(updateFeedDto.password);
+
+    return await feed.save();
   }
 
   async remove(feedId: number, inputPassword: string): Promise<void> {

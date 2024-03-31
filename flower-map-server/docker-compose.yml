@@ -7,9 +7,9 @@ services:
     ports:
       - ${DB_PORT}:${DB_PORT}
     volumes:
-      - ./test/db/data:/var/lib/mysql # 생성된 데이터 저장 위치
-      - ./test/db/conf.d:/etc/mysql/conf.d # my.cnf 세팅
-      - ./test/db/sql:/docker-entrypoint-initdb.d # 초기데이터 설정
+      - ./docker/db/data:/var/lib/mysql # 생성된 데이터 저장 위치
+      - ./docker/db/conf.d:/etc/mysql/conf.d # my.cnf 세팅
+      - ./docker/db/sql:/docker-entrypoint-initdb.d # 초기데이터 설정
     restart: always
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
