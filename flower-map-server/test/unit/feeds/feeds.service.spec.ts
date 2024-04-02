@@ -32,7 +32,7 @@ describe('FeedsService', () => {
       const feed = new Feed();
       feed.password = password;
       jest.spyOn(feedsRepository, 'create').mockReturnThis();
-      jest.spyOn(feedsRepository, 'save').mockReturnThis();
+      jest.spyOn(feedsRepository, 'save').mockResolvedValue(feed);
 
       // when
       const result = await service.create(feed);
