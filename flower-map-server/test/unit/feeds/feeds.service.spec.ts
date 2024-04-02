@@ -72,6 +72,45 @@ describe('FeedsService', () => {
     });
   });
 
+  describe('remove', () => {
+    let feed;
+
+    beforeEach(() => {
+      feed = new Feed();
+      feed.password = '$2a$10$wXfG5b3QAE6eoJErF.hmPONRpep/aBl7eoXRnhb/XNE0DgqtK12k6';
+      jest.spyOn(feedsRepository, 'findOne').mockResolvedValue(feed);
+    });
+
+    it('Feed.password와 inputPassword가 일치하여 게시글을 삭제한다.', async () => {
+      // given
+      const feedId = 1;
+      const inputPassword = 'Feed12';
+
+      jest.spyOn(feed, 'softRemove').mockReturnThis();
+
+      // when
+      const result = await service.remove(feedId, inputPassword);
+
+      // then
+      expect(feed.softRemove).toHaveBeenCalled();
+      expect(result).toBeUndefined();
+    });
+
+    it('Feed.password와 inputPassword가 일치하지 않아 FU401 예외 발생.', async () => {
+      // given
+      const feedId = 1;
+      const inputPassword = 'Wrong1';
+
+      jest.spyOn(feed, 'softRemove').mockReturnThis();
+
+      // when
+      // then
+      await expect(service.remove(feedId, inputPassword))
+        .rejects
+        .toThrow(new UnauthorizedException(CustomErrorCode.FEED_UNAUTHORIZED));
+    });
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
