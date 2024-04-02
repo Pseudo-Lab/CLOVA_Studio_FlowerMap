@@ -3,7 +3,7 @@ import { FeedsService } from '../../../src/modules/feeds/feeds.service';
 import { Repository } from 'typeorm';
 import { Feed } from 'src/modules/feeds/entities/feed.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 
 describe('FeedsService', () => {
