@@ -73,11 +73,11 @@ describe('FeedsService', () => {
         leftJoin: jest.fn().mockReturnThis(),
         addSelect: jest.fn().mockReturnThis(),
         leftJoinAndSelect: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(), // 조건에 따라 호출되는 값이 변동
+        where: jest.fn().mockReturnThis(), // 파라미터 그대로 전달
         groupBy: jest.fn().mockReturnThis(),
         addGroupBy: jest.fn().mockReturnThis(),
-        take: jest.fn().mockReturnThis(), // 조건에 따라 호출되는 값이 변동
-        skip: jest.fn().mockReturnThis(), // 조건에 따라 호출되는 값이 변동
+        take: jest.fn().mockReturnThis(), // 파라미터 그대로 전달
+        skip: jest.fn().mockReturnThis(), // 파라미터 그대로 전달
         orderBy: jest.fn().mockReturnThis(), // 조건에 따라 호출되는 값이 변동
         addOrderBy: jest.fn().mockReturnThis(), //조건에 따라 호출 안될수도 있음
         getCount: jest.fn().mockResolvedValue(total),
