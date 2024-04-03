@@ -42,6 +42,94 @@ describe('FeedsService', () => {
     });
   });
 
+  describe('findAllByLocationId', () => {
+    // 함수 인자
+    let locationId;
+    let orderBy;
+    let limit;
+    let offset;
+    // 결과
+    let raw;
+    let entities;
+    let total;
+    // mock 쿼리빌더
+    let mockCreateQueryBuilder: any;
+
+    beforeEach(() => {
+      // 함수 인자
+      locationId = 1;
+      limit = 10;
+      offset = 0;
+      // 결과
+      raw = [];
+      entities = [];
+      total = 100;
+      for (let i = 10; i > 0; i--) {
+        raw.push({ heartCount: i });
+        entities.push(new Feed());
+      }
+      // mock
+      mockCreateQueryBuilder = {
+        leftJoin: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(), // 조건에 따라 호출되는 값이 변동
+        groupBy: jest.fn().mockReturnThis(),
+        addGroupBy: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(), // 조건에 따라 호출되는 값이 변동
+        skip: jest.fn().mockReturnThis(), // 조건에 따라 호출되는 값이 변동
+        orderBy: jest.fn().mockReturnThis(), // 조건에 따라 호출되는 값이 변동
+        addOrderBy: jest.fn().mockReturnThis(), //조건에 따라 호출 안될수도 있음
+        getCount: jest.fn().mockResolvedValue(total),
+        getRawAndEntities: jest.fn().mockResolvedValue({ raw, entities })
+      };
+    });
+
+    it('최신순 정렬이 호출되어야함.', async () => {
+      // given
+      orderBy = 'feedId';
+
+      jest
+        .spyOn(feedsRepository, 'createQueryBuilder')
+        .mockImplementation(() => mockCreateQueryBuilder);
+
+      // when
+      const result = await service.findAllByLocationId(locationId, orderBy, limit, offset);
+
+      // then
+      expect(mockCreateQueryBuilder.where).toHaveBeenCalledWith('feed.location.locationId = :locationId', { locationId });
+      expect(mockCreateQueryBuilder.take).toHaveBeenCalledWith(limit);
+      expect(mockCreateQueryBuilder.skip).toHaveBeenCalledWith(offset);
+      expect(mockCreateQueryBuilder.orderBy).toHaveBeenCalledWith('feed.feedId', 'DESC');
+      expect(mockCreateQueryBuilder.addOrderBy).not.toHaveBeenCalled();
+      for (let i = 0; i < result[0].length; i++) expect(result[0][i].heartCount).toEqual(raw[i].heartCount);
+      expect(result[1]).toEqual(total);
+    });
+
+    it('heartCount 순 정렬이 호출되어야함.', async () => {
+      // given
+      orderBy = 'heartCount';
+
+      mockCreateQueryBuilder.addOrderBy = jest.fn().mockReturnThis();
+
+      jest
+        .spyOn(feedsRepository, 'createQueryBuilder')
+        .mockImplementation(() => mockCreateQueryBuilder);
+
+      // when
+      const result = await service.findAllByLocationId(locationId, orderBy, limit, offset);
+
+      // then
+      expect(mockCreateQueryBuilder.where).toHaveBeenCalledWith('feed.location.locationId = :locationId', { locationId });
+      expect(mockCreateQueryBuilder.take).toHaveBeenCalledWith(limit);
+      expect(mockCreateQueryBuilder.skip).toHaveBeenCalledWith(offset);
+      expect(mockCreateQueryBuilder.orderBy).toHaveBeenCalledWith('heartCount', 'DESC');
+      expect(mockCreateQueryBuilder.addOrderBy).toHaveBeenCalledWith('feed.feedId', 'DESC');
+      for (let i = 0; i < result[0].length; i++) expect(result[0][i].heartCount).toEqual(raw[i].heartCount);
+      expect(result[1]).toEqual(total);
+    });
+  });
+
   describe('findOne', () => {
     it('feedId를 이용하여 Feed를 조회하고 존재할 경우 해당 Feed 반환.', async () => {
       // given
