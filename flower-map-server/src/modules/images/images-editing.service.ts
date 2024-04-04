@@ -8,7 +8,7 @@ export class ImagesEditingService {
     private readonly SUPPORTED_EXTS = ['jpeg', 'png', 'webp'];
     private readonly HEIF_C_EXTS = ['heif', 'heic']
 
-    private async decodeHeic(bufferImage: Buffer): Promise<{ width: number, height: number, data: Uint8ClampedArray }> {
+    private async decodeHeic(bufferImage: Buffer): Promise<{ width: number, height: number, data: ArrayBuffer }> {
         return await heicDecode({ buffer: bufferImage });
     }
 

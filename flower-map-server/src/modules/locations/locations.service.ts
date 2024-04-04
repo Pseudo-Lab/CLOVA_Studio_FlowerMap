@@ -32,7 +32,7 @@ export class LocationsService {
       .setParameters({ longitude, latitude, meter });
 
     // FlowerId가 존재할 경우
-    if (flowerIds) {
+    if (Array.isArray(flowerIds) && flowerIds.length > 0) {
       baseQuery.andWhere('flower.flowerId IN (:...flowerIds)', { flowerIds });
     }
 
