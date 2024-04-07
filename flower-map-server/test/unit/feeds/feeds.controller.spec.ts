@@ -11,6 +11,7 @@ import { Flower } from 'src/modules/flowers/entities/flower.entity';
 import { CreateFeedDto } from 'src/modules/feeds/dto/create-feed.dto';
 import { CreateImageDto } from 'src/modules/images/dto/create-image.dto';
 import { SingleResponseDto } from 'src/common/single-response.dto';
+import { RequestQueriesFeedDto } from 'src/modules/feeds/dto/request-queries-feed.dto';
 
 describe('FeedsController', () => {
   let controller: FeedsController;
@@ -79,8 +80,35 @@ describe('FeedsController', () => {
       expect(flowersService.exists).toHaveBeenCalledWith(createFeedDto.images[1].flowerId)
       expect(flowersService.exists).toHaveBeenCalledWith(createFeedDto.images[2].flowerId)
       expect(createFeedDto.userIp).toEqual(userIp);
-      expect(feedsService.create).toHaveBeenCalledWith(createFeedDto);
+      expect(feedsService.create).toHaveBeenCalledWith(createFeedDto.toEntity());
       expect(result).toEqual(new SingleResponseDto('Feed', feed.feedId));
+    });
+  });
+
+  describe('getFeedsByLocationId', () => {
+    it('locationId에 따른 Feed들을 요청하며, Dto로 변환하여 페이지네이션 객체에 담아 반환한다.', async () => {
+      // given
+      // 전달 인자
+      const locationId = 1;
+      const queries = new RequestQueriesFeedDto();
+      queries.limit = 10;
+      queries.offset = 0;
+      queries.orderBy = 'feedId';
+
+      // feedsService.findAllByLocationId() 반환값 모킹
+      const feeds: Feed[] = Array.from({ length: 10 }, () => new Feed());
+      const total = 100;
+
+      jest.spyOn(feedsService, 'findAllByLocationId').mockResolvedValue([feeds, total]);
+
+      // when
+      const result = await controller.getFeedsByLocationId(locationId, queries);
+
+      // then
+      expect(result.total).toEqual(total);
+      expect(result.offset).toEqual(queries.offset);
+      expect(result.limit).toEqual(queries.limit);
+      expect(result.data.length).toEqual(feeds.length);
     });
   });
 
