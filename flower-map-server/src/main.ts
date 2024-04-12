@@ -3,7 +3,8 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { setupSwagger } from './config/swagger.config';
 import { ConfigService } from '@nestjs/config';
-import { CustomHttpExceptionFilter } from './common/exception/custom-http-exception.filter';
+import { CustomHttpExceptionFilter } from './common/filter/custom-http-exception.filter';
+import { BadRequestExceptionFilter } from './common/filter/bad-request-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,7 +14,10 @@ async function bootstrap() {
   app.enableCors();
 
   // 예외 필터
-  app.useGlobalFilters(new CustomHttpExceptionFilter())
+  app.useGlobalFilters(
+    new BadRequestExceptionFilter(),
+    new CustomHttpExceptionFilter(),
+  );
 
   // swagger API 문서화 설정
   setupSwagger(app);
