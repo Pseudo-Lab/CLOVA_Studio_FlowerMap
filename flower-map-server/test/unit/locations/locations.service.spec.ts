@@ -4,9 +4,9 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Location } from 'src/modules/locations/entities/location.entity';
 import { Repository } from 'typeorm';
 import { RequestNearbyQueriesDto } from 'src/modules/locations/dto/request-nearby-queries.dto';
-import { NotFoundException } from '@nestjs/common';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 import { SearchQueriesDto } from 'src/modules/locations/dto/search-queries.dto';
+import { CustomHttpException } from 'src/common/exception/custom-http-exception';
 
 describe('LocationsService', () => {
   let service: LocationsService;
@@ -115,7 +115,7 @@ describe('LocationsService', () => {
       // then
       await expect(service.existsById(1))
         .rejects
-        .toThrow(new NotFoundException(CustomErrorCode.LOCATION_NOT_FOUND));
+        .toThrow(new CustomHttpException(CustomErrorCode.LOCATION_NOT_FOUND));
     });
   });
 
@@ -146,7 +146,7 @@ describe('LocationsService', () => {
       // then
       await expect(service.findOne(1))
         .rejects
-        .toThrow(new NotFoundException(CustomErrorCode.LOCATION_NOT_FOUND));
+        .toThrow(new CustomHttpException(CustomErrorCode.LOCATION_NOT_FOUND));
     });
   });
 

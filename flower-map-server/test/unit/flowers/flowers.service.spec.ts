@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Flower } from 'src/modules/flowers/entities/flower.entity';
 import { Repository } from 'typeorm';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
-import { NotFoundException } from '@nestjs/common';
+import { CustomHttpException } from 'src/common/exception/custom-http-exception';
 
 describe('FlowersService', () => {
   let service: FlowersService;
@@ -43,7 +43,7 @@ describe('FlowersService', () => {
 
       // when
       // then
-      await expect(service.exists(flowerId)).rejects.toThrow(new NotFoundException(CustomErrorCode.FLOWER_NOT_FOUND));
+      await expect(service.exists(flowerId)).rejects.toThrow(new CustomHttpException(CustomErrorCode.FLOWER_NOT_FOUND));
     });
   });
 

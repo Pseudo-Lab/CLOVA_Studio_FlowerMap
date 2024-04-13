@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Image } from './entities/image.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
+import { CustomHttpException } from 'src/common/exception/custom-http-exception';
 
 @Injectable()
 export class ImagesService {
@@ -18,7 +19,7 @@ export class ImagesService {
   async isUsableImage(imageId: number) {
     // 사용중이지 않는(feed==null) 이미지를 찾는다
     if (!await this.imagesRepository.existsBy({ imageId, feed: IsNull() })) {
-      throw new NotFoundException(CustomErrorCode.IMAGE_NOT_FOUND);
+      throw new CustomHttpException(CustomErrorCode.IMAGE_NOT_FOUND);
     }
   }
 

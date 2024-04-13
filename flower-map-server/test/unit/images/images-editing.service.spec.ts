@@ -3,8 +3,8 @@ import { ImagesEditingService } from '../../../src/modules/images/images-editing
 import { join } from 'path';
 import { readFileSync } from 'fs';
 import * as sharp from 'sharp';
-import { BadRequestException } from '@nestjs/common';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
+import { CustomHttpException } from 'src/common/exception/custom-http-exception';
 
 describe('ImagesEditingService', () => {
   let service: ImagesEditingService;
@@ -63,7 +63,7 @@ describe('ImagesEditingService', () => {
       // then
       expect(service.editImage(bufferImage, ext, width, height))
         .rejects
-        .toThrow(new BadRequestException(CustomErrorCode.IMAGE_UNSUPPORTED_EXT));
+        .toThrow(new CustomHttpException(CustomErrorCode.IMAGE_UNSUPPORTED_EXT));
     });
   });
 
