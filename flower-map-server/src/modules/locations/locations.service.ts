@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Location } from './entities/location.entity';
 import { Repository } from 'typeorm';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
 import { RequestNearbyQueriesDto } from './dto/request-nearby-queries.dto';
 import { SearchQueriesDto } from './dto/search-queries.dto';
+import { CustomHttpException } from 'src/common/exception/custom-http-exception';
 
 @Injectable()
 export class LocationsService {
@@ -41,7 +42,7 @@ export class LocationsService {
 
   async existsById(locationId: number) {
     if (!await this.locationsRepository.existsBy({ locationId })) {
-      throw new NotFoundException(CustomErrorCode.LOCATION_NOT_FOUND);
+      throw new CustomHttpException(CustomErrorCode.LOCATION_NOT_FOUND);
     }
   }
 
@@ -51,7 +52,7 @@ export class LocationsService {
       relations: { flowers: true }
     });
     if (location) return location;
-    else throw new NotFoundException(CustomErrorCode.LOCATION_NOT_FOUND);
+    else throw new CustomHttpException(CustomErrorCode.LOCATION_NOT_FOUND);
   }
 
   // TODO 검색어 연관도 순으로 최적화해야함

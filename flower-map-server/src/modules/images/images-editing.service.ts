@@ -1,7 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as heicDecode from 'heic-decode';
 import * as sharp from 'sharp';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
+import { CustomHttpException } from 'src/common/exception/custom-http-exception';
 
 @Injectable()
 export class ImagesEditingService {
@@ -15,7 +16,7 @@ export class ImagesEditingService {
     async editImage(bufferImage: Buffer, ext: string, width: number, height: number): Promise<Buffer> {
         ext = ext.toLowerCase();
         if (!this.SUPPORTED_EXTS.includes(ext)) {
-            throw new BadRequestException(CustomErrorCode.IMAGE_UNSUPPORTED_EXT);
+            throw new CustomHttpException(CustomErrorCode.IMAGE_UNSUPPORTED_EXT);
         }
 
         // 메타데이터 수집

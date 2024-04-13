@@ -3,8 +3,8 @@ import { FeedsService } from '../../../src/modules/feeds/feeds.service';
 import { Repository } from 'typeorm';
 import { Feed } from 'src/modules/feeds/entities/feed.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CustomErrorCode } from 'src/common/exception/custom-error-code';
+import { CustomHttpException } from 'src/common/exception/custom-http-exception';
 
 describe('FeedsService', () => {
   let service: FeedsService;
@@ -156,7 +156,7 @@ describe('FeedsService', () => {
       // then
       await expect((service.findOne(feedId)))
         .rejects
-        .toThrow(new NotFoundException(CustomErrorCode.FEED_NOT_FOUND));
+        .toThrow(new CustomHttpException(CustomErrorCode.FEED_NOT_FOUND));
     });
   });
 
@@ -195,7 +195,7 @@ describe('FeedsService', () => {
       // then
       await expect(service.remove(feedId, inputPassword))
         .rejects
-        .toThrow(new UnauthorizedException(CustomErrorCode.FEED_UNAUTHORIZED));
+        .toThrow(new CustomHttpException(CustomErrorCode.FEED_UNAUTHORIZED));
     });
   });
 
