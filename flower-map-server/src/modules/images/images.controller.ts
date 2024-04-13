@@ -10,7 +10,7 @@ import { FlowersService } from '../flowers/flowers.service';
 
 // API 문서
 @ApiTags('Image(이미지) API')
-@ApiBadRequestResponse({ description: `잘못된 요청 형식입니다. (body, query, param 등) [errorCode=${CustomErrorCode.VALIDATION_BAD_REQUEST}]` })
+@ApiBadRequestResponse({ description: `잘못된 요청 형식입니다. (body, query, param 등) [errorCode=${CustomErrorCode.VALIDATION_BAD_REQUEST.errorCode}]` })
 @Controller('api/v1/images')
 export class ImagesController {
   constructor(
@@ -45,7 +45,7 @@ export class ImagesController {
       }
     }
   })
-  @ApiBadRequestResponse({ description: `잘못된 요청 형식입니다. (body, query, param 등), 지원하지 않는 이미지 형식일 경우 [errorCode=${CustomErrorCode.VALIDATION_BAD_REQUEST}, ${CustomErrorCode.IMAGE_UNSUPPORTED_EXT}]` })
+  @ApiBadRequestResponse({ description: `잘못된 요청 형식입니다. (body, query, param 등), 지원하지 않는 이미지 형식일 경우 [errorCode=${CustomErrorCode.VALIDATION_BAD_REQUEST.errorCode}, ${CustomErrorCode.IMAGE_UNSUPPORTED_EXT.errorCode}]` })
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   async upload(@UploadedFile(new ParseFilePipe({

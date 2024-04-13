@@ -16,8 +16,7 @@ import { FlowersService } from '../flowers/flowers.service';
 
 // API 문서
 @ApiTags('Feed(게시글) API')
-@ApiBadRequestResponse({ description: `잘못된 요청 형식입니다. (body, query, param 등) [errorCode=${CustomErrorCode.VALIDATION_BAD_REQUEST}]` })
-
+@ApiBadRequestResponse({ description: `잘못된 요청 형식입니다. (body, query, param 등) [errorCode=${CustomErrorCode.VALIDATION_BAD_REQUEST.errorCode}]` })
 @Controller('api/v1/feeds')
 export class FeedsController {
   constructor(
@@ -34,7 +33,7 @@ export class FeedsController {
   ` })
   @ApiBody({ type: CreateFeedDto })
   @ApiCreatedResponse({ description: '요청 성공', type: SingleResponseDto })
-  @ApiNotFoundResponse({ description: `Flower, Location이 존재하지 않습니다. [errorCode=${CustomErrorCode.FLOWER_NOT_FOUND} or ${CustomErrorCode.LOCATION_NOT_FOUND}]` })
+  @ApiNotFoundResponse({ description: `Flower, Location이 존재하지 않습니다. [errorCode=${CustomErrorCode.FLOWER_NOT_FOUND.errorCode} or ${CustomErrorCode.LOCATION_NOT_FOUND.errorCode}]` })
   @Post()
   async create(
     @Body() createFeedDto: CreateFeedDto,
@@ -82,30 +81,31 @@ export class FeedsController {
   // API 문서
   @ApiOperation({ summary: 'Feed 단건 조회', description: '특정 Feed의 상세정보를 조회합니다.' })
   @ApiOkResponse({ description: '요청 성공', type: ResponseFeedDto })
-  @ApiNotFoundResponse({ description: `요청하신 Feed가 존재하지 않습니다. [errorCode=${CustomErrorCode.FEED_NOT_FOUND}]` })
-
+  @ApiNotFoundResponse({ description: `요청하신 Feed가 존재하지 않습니다. [errorCode=${CustomErrorCode.FEED_NOT_FOUND.errorCode}]` })
   @Get(':feedId')
   async findOne(@Param('feedId', ParseIntPipe) feedId: number): Promise<ResponseFeedDto> {
     return new ResponseFeedDto(await this.feedsService.findOne(feedId));
   }
 
-  @Patch(':feedId')
   @ApiOperation({ summary: 'Feed 수정 (미완)', description: '특정 Feed의 정보를 수정합니다.<br>수정을 원하는 값만 보내면 됩니다.<br>@비밀번호 변경 여부 논의 필요<br>password : 비밀번호 확인을 위해 필수' })
   @ApiOkResponse({ description: '요청 성공', type: SingleResponseDto })
   @ApiNotFoundResponse({ description: '요청하신 Feed가 존재하지 않습니다.' })
   @ApiUnauthorizedResponse({ description: '잘못된 비밀번호' })
-  update(@Param('feedId') feedId: number,
+  @Patch(':feedId')
+  async update(@Param('feedId') feedId: number,
     @Body() updateFeedDto: UpdateFeedDto) {
-    return new SingleResponseDto('Feed', feedId)
-    // return this.feedsService.update(feedId, updateFeedDto);
+
+    const feed = await this.feedsService.update(feedId, updateFeedDto);
+
+    return new SingleResponseDto('Feed', feed.feedId);
   }
 
   // API 문서화
   @ApiOperation({ summary: 'Feed 삭제', description: '특정 Feed를 삭제합니다.' })
   @ApiBody({ type: PasswordDto })
   @ApiNoContentResponse({ description: '요청 성공' })
-  @ApiNotFoundResponse({ description: `요청하신 Feed가 존재하지 않습니다. [errorCode=${CustomErrorCode.FEED_NOT_FOUND}]` })
-  @ApiUnauthorizedResponse({ description: `잘못된 비밀번호 [errorCode=${CustomErrorCode.FEED_UNAUTHORIZED}]` })
+  @ApiNotFoundResponse({ description: `요청하신 Feed가 존재하지 않습니다. [errorCode=${CustomErrorCode.FEED_NOT_FOUND.errorCode}]` })
+  @ApiUnauthorizedResponse({ description: `잘못된 비밀번호 [errorCode=${CustomErrorCode.FEED_UNAUTHORIZED.errorCode}]` })
 
   @Delete(':feedId')
   @HttpCode(HttpStatus.NO_CONTENT)

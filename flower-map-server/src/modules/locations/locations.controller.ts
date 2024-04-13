@@ -11,7 +11,7 @@ import { ResponsePageDto } from 'src/common/response-page.dto';
 import { SearchQueriesDto } from './dto/search-queries.dto';
 
 @ApiTags('Location(위치정보) API')
-@ApiBadRequestResponse({ description: `잘못된 요청 형식입니다. (body, query, param 등)[errorCode=${CustomErrorCode.VALIDATION_BAD_REQUEST}]` })
+@ApiBadRequestResponse({ description: `잘못된 요청 형식입니다. (body, query, param 등)[errorCode=${CustomErrorCode.VALIDATION_BAD_REQUEST.errorCode}]` })
 @Controller('api/v1/locations')
 export class LocationsController {
   constructor(
@@ -71,7 +71,7 @@ export class LocationsController {
 
   @ApiOperation({ summary: 'Location 단건 조회', description: '특정 Location을 id로 조회한다.' })
   @ApiOkResponse({ description: '요청 성공', type: ResponseLocationDto })
-  @ApiNotFoundResponse({ description: `Locatioon이 존재하지 않습니다. [errorCode=${CustomErrorCode.LOCATION_NOT_FOUND}]` })
+  @ApiNotFoundResponse({ description: `Locatioon이 존재하지 않습니다. [errorCode=${CustomErrorCode.LOCATION_NOT_FOUND.errorCode}]` })
   @Get(':locationId')
   async findOne(@Param('locationId', ParseIntPipe) locationId: number): Promise<ResponseLocationDto> {
     const location = await this.locationsService.findOne(locationId);
