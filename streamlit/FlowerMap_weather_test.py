@@ -10,7 +10,7 @@ plt.rcParams['font.family'] = "AppleGothic"
 # plt.rcParams['font.family'] = "NanumGothic"
 plt.rcParams['axes.unicode_minus'] = False
 
-data = pd.read_csv('/Users/soo/Desktop/데이터/개인공부/참여형 봄꽃놀이 지도/02. 기상 데이터 수집 및 시각화/01. 기상청_2~3월 기상정보 크롤링/기상청 크롤링_2020~2024_2~3월 기온_서울.csv', encoding='utf-8')
+data = pd.read_csv('../기상청 크롤링_2020~2024_2~3월 기온_서울.csv', encoding='utf-8')
 data = data.drop('Unnamed: 0',axis=1)
 data['년월일']=pd.to_datetime(data['년월일'])
 data_1 = data.copy()
